@@ -16,7 +16,7 @@ switch ($mode)
 						);
 		break;
 		
-	case "init" :
+	case "construct" :
 		if ( !isset($this->page_info['IN_CORE']) )
 		{
 			$core->header = new header($core, $this->page_info);

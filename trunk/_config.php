@@ -14,7 +14,7 @@ $config = array (
 										"host" 				=> "localhost",						# database host name
 										"username" 			=> "root",							# database user name
 										"paswoord" 			=> "",								# database password
-										"database" 			=> ""							# database name
+										"database" 			=> "koten"							# database name
 									)
 					);
 					

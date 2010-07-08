@@ -8,8 +8,7 @@ final class core
 {
 	public
 		$path,
-		$plugs = array(),
-		$browser_info = array()
+		$plugs = array()
 		;
 
 	function __construct($page_info = array())
@@ -27,12 +26,61 @@ final class core
 		$this->core_handeling( 'construct' );
 	}
 	
-	# its is a little confusing
+	# pseudo destructor
 	public function close ()
 	{
 		# referentie
 		$core = $this;
+		
+		# destroying user defined modules
+		$this->destroy_modules();
+		
+		# destroying core handeling modules
 		$this->core_handeling( 'destruct' );
+	}
+	
+	# script level module loader
+	public function load_modules ( $modules )
+	{
+		# more then one module load_modules( array('module1', 'module2') );
+		if ( is_array($modules) )
+		{
+			foreach ( $modules as $module )
+			{
+				$this->plugs[] = $module;
+				$this->module_handeling ( $module, 'construct' );
+			}
+		}
+		# only 1 module string like given load_modules('module1');
+		else
+		{
+			$this->plugs[] = $modules;
+			$this->module_handeling ( $modules, 'construct' );
+		}
+	}
+	
+	# script level module destructor
+	private function destroy_modules ( )
+	{
+		foreach ( $this->plugs as $module )
+		{
+			$this->module_handeling ( $module, 'destruct' );
+		}
+	}
+	
+	# loading the modules by script defined
+	# does only load at pages where needed
+	private function module_handeling( $file, $mode )
+	{
+		if ( is_file($this->path . 'frame/_modules/' . $file . '.php') )
+		{
+			$core = $this;
+			if ( $mode == 'construct' )
+			{
+				include($this->path . 'frame/_modules/classes/' . $file . '.php');
+			}
+			include($this->path . 'frame/_modules/' . $file. '.php');
+		}
 	}
 	
 	# loading the main core, on each page
@@ -57,11 +105,7 @@ final class core
 	
 	# load config file
 	private function load_config ($page_info) 
-	{	
-		# Find absolute path to the root
-		# source : swiftlet
-		$this->absPath = str_replace('//', '/', preg_replace('/([^\/]+\/){' . ( substr_count(( $this->path == './' ? '' : $this->path ), '/') ) . '}$/', '', dirname(str_replace('\\', '/', $_SERVER['PHP_SELF'])) . '/'));
-
+	{
 		# only var we really need
 		$this->path = (isset ($page_info['PATH'])) ? $page_info['PATH'] : "./";
 
@@ -72,7 +116,6 @@ final class core
 				$this->_page->{$k} = $v;
 			}
 		}
-		
 		
 		# add it
 		include($this->path . '_config.php');
@@ -88,16 +131,6 @@ final class core
 			
 			# make config unaccesable
 			unset($config);
-		}
-	}
-	
-	public function load_module ( $file )
-	{
-		if ( is_file($this->path . 'frame/_modules/' . $file . '.php') )
-		{
-			$mode = "init";
-			include($this->path . 'frame/_modules/classes/' . $module . '.php');
-			include($this->path . 'frame/_modules/' . $module. '.php');
 		}
 	}
 

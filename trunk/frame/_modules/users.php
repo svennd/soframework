@@ -15,7 +15,7 @@ switch ($mode)
 							);
 		break;
 		
-	case "init" :
+	case "construct" :
 		$core->user = new user($core);
 		break;
 }
