@@ -13,7 +13,7 @@ switch ($mode)
 						);
 		break;
 		
-	case "init" :
+	case "construct" :
 		$core->form = new form($core);
 		break;
 }

@@ -134,7 +134,8 @@ class session
 		# fix, this seems to bug a few things
 		if ( !headers_sent() )
 		{
-			setcookie('core_session', $this->id, time() + $this->lifeTime, $this->core->absPath);
+			$absPath = str_replace('//', '/', preg_replace('/([^\/]+\/){' . ( substr_count(( $this->core->path == './' ? '' : $this->core->path ), '/') ) . '}$/', '', dirname(str_replace('\\', '/', $_SERVER['PHP_SELF'])) . '/'));
+			setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
 		}
 		else
 		{

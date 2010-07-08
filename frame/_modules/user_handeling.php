@@ -13,7 +13,7 @@ switch ($mode)
 						);
 		break;
 		
-	case "init" :
+	case "construct" :
 		$core->user_handeling = new user_handeling($core);
 		break;
 }
