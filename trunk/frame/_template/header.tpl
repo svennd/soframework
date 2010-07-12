@@ -16,7 +16,7 @@
 		<meta name="copyright"    content="&copy; website"/>		
 		
 		<!-- css -->
-		<link href="<?php echo $header['template_folder'] ?>/css/default.css" rel="stylesheet" type="text/css" />
+		<link href="<?php echo (isset($header['template_folder'])) ? $header['template_folder'] : './frame/_template' ?>/css/default.css" rel="stylesheet" type="text/css" />
 
 		<?php echo (isset($header['addit_header'])) ? "<!-- additional header files -->\n" . $header['addit_header'] : ''; ?>
 	</head>

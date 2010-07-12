@@ -10,10 +10,7 @@ final class template
 {
 	public 
 		$core,
-		$variables
-		;
-	
-	protected
+		$variables,
 		$page
 		;
 	
@@ -35,8 +32,8 @@ final class template
 		$this->variables[$name] = $value;
 	}
 	
-	// haalt de inhoud van de pagina op
-	private function load ($file)
+	# 'parse' $file
+	public function use_page ($file)
 	{
 		# this makes sure, user doesn't get anything we don't want.
 		if ( !empty($this->variables) )
@@ -44,25 +41,22 @@ final class template
 			extract($this->variables);
 		}
 		
+		# load file
 		if(file_exists("frame/_template/" . $file . ".tpl"))
 		{
 			ob_start();
 			include("frame/_template/" . $file . ".tpl");
 			$output = ob_get_contents();
 			ob_end_clean();
-			return $output;
+			
+			# return content
+			$this->page .= $output;
 		}
+		# maybe an error would be nice tho
 		return false;
 	}
 	
-	// haalt de pagina op en verwerkt de pagina, public
-	public function output_page ($page)
-	{
-		# this is so ugly ... but is needed bcous otherwise sessions are already made while page is already send
-		# header already send error...
-		$this->page .= $this->load($page);
-	}
-	
+	# pust output to screen
 	public function push_output ()
 	{
 		return ( !empty($this->page) ) ? $this->page : $this->core->error( 1, "Pagina kon is niet aangemaakt", __FILE__, __LINE__);
