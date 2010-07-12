@@ -15,5 +15,11 @@ switch ($mode)
 	case "construct" :
 		$core->cms = new cms($core);
 		break;
+		
+	case "destruct" :
+		# this will remove the tags from html
+		# just to not tell the end-user to much info ;)
+		$core->cms->remove_tags();
+	break;
 }
 ?>

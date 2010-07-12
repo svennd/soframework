@@ -44,7 +44,7 @@ class cms
 	# this should be checked again, but since this is a fixed ( = private) i din't feel the need to implement this
 	public function get_file_list ()
 	{
-		return $edit_able;
+		return $this->edit_able;
 	}
 	
 	# edit the file, and text
@@ -110,5 +110,13 @@ class cms
 		return false;
 	}
 	
+	# removes visible adds in end-user output
+	public function remove_tags ()
+	{
+		if ( isset($this->core->template->page))
+		{	
+			$this->core->template->page = preg_replace( '/<!--(.+?)-->/', '', $this->core->template->page); 
+		}
+	}
 }
 ?>

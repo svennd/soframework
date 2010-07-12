@@ -75,10 +75,8 @@ final class core
 		if ( is_file($this->path . 'frame/_modules/' . $file . '.php') )
 		{
 			$core = $this;
-			if ( $mode == 'construct' )
-			{
-				include($this->path . 'frame/_modules/classes/' . $file . '.php');
-			}
+			# faster then include_once
+			( $mode == 'construct' ) ? include($this->path . 'frame/_modules/classes/' . $file . '.php') : '';
 			include($this->path . 'frame/_modules/' . $file. '.php');
 		}
 	}
@@ -94,10 +92,7 @@ final class core
 			foreach ($this->_core_modules[$mode] as $module)
 			{
 				# this method seems way faster then include_once();
-				if ( $mode == 'construct' )
-				{
-					include($this->path . 'frame/_core/classes/' . $module . '.php');
-				}
+				( $mode == 'construct' ) ?  include ($this->path . 'frame/_core/classes/' . $module . '.php') : '';
 				include($this->path . 'frame/_core/' . $module . '.php');
 			}
 		}
@@ -160,16 +155,11 @@ final class core
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 				<html>
 				<head><title>A Problem has been found.</title>
-				<style>
-					#frame_error body {color: #000;font-family: monospace;font-size: 12px;}
-					#frame_error div {color: #300;background: #FFC;border: 1px solid #DD7;padding: 1em 2em;}
-					#frame_error a:link, #frame_error a:hover, #frame_error a:active, #frame_error a:visited {color: #AA4;}
-				</style>
 				</head>
 				<body>
-					<div><p>
-							Oops! An error occured. <br/> message : '. $err_msg.'<br/> error : '. $s_err_level .'<br/> line : '. $err_line .' ('.$err_file.')
-					</p></div>
+				<p>
+					Oops! An error occured. <br/> message : '. $err_msg.'<br/> error : '. $s_err_level .'<br/> line : '. $err_line .' ('.$err_file.')
+				</p>
 				</body>
 				</html>
 			';
