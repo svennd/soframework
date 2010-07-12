@@ -11,17 +11,14 @@ $core->load_modules('form');
 	# $core->form->function();
 
 # information needed for header.tpl (this can be done in an optional module "header.php", an editted by givin $page_info in initialiser)
-$header_template_vars = array(
-								'TITEL' 				=> 'voorbeeld bestand',
-								'TITEL_META' 			=> 'voorbeeld van frame',
-								'DESCRIPTION' 			=> 'voorbeeld bestand',
-								'KEYWORDS' 				=> '',
-								'ADDAPT_HEADER' 		=> '',
-								'TEMPLATE_FOLDER' 		=> './frame/_template'
+$core->template->header = array(
+								'title' 				=> 'voorbeeld bestand',
+								'template_folder' 		=> './frame/_template'
 							);
 # output for the header
-$core->template->output_page('header', $header_template_vars);
+$core->template->output_page('header');
 
+$core->template->test = 123;
 # return the index.tpl w/o using the template system to replace stuff
 # ofc here should happen way more like getting query's doing math ect.
 $core->template->output_page('index');
