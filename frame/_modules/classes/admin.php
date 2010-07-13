@@ -110,7 +110,7 @@ class cms
 		return false;
 	}
 	
-	# removes visible adds in end-user output
+	# removes visible ads in end-user output
 	public function remove_tags ()
 	{
 		if ( isset($this->core->template->page))
