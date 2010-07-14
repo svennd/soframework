@@ -1,9 +1,10 @@
 <?php
 #######################
-#	sessions.php
-#   Svenn D'Hert
+#	file	: sessions.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: session system
 ########################
-
 class session
 {
 	public

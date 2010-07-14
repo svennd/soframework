@@ -1,7 +1,9 @@
 <?php
 #######################
-#	admin.php
-#   Svenn D'Hert
+#	file	: admin_cms.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: basic cms function
 ########################
 
 class cms

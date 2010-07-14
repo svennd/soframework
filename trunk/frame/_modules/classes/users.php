@@ -1,7 +1,9 @@
 <?php
 #######################
-#	user.php
-#   Svenn D'Hert
+#	file	: users.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: users system
 ########################
 
 class user
