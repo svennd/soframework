@@ -1,7 +1,9 @@
 <?php
 #######################
-#	user_handeling.php
-#   Svenn D'Hert
+#	file	: user_handeling.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: basic user handeling
 ########################
 
 class user_handeling

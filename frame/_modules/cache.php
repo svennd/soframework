@@ -6,7 +6,6 @@ switch ($mode)
 {
 	case "read_config" :
 			$struct = array (
-							"short"		=> "SA",
 							"name"		=> "SQL cache system",
 							"version"	=> "1.0.0",
 							"author"	=> "Svenn D\'Hert"

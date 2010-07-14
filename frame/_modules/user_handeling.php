@@ -6,11 +6,10 @@ switch ($mode)
 {
 	case "read_config" :
 			$struct = array (
-						"short"		=> "UH",
-						"name"		=> "User Handeling",
-						"version"	=> "1.0.0",
-						"author"	=> "Svenn D\'Hert"
-						);
+							"name"		=> "User Handeling",
+							"version"	=> "1.0.0",
+							"author"	=> "Svenn D\'Hert"
+							);
 		break;
 		
 	case "construct" :

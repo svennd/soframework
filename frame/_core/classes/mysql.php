@@ -1,15 +1,16 @@
 <?php
 #######################
-#	database.php
-#   Svenn D'Hert
+#	file	: mysql.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: mysql handeling
 ########################
 
 class mysql
 {
 	public 
 		$core,
-		$db_ready = false,
-		$tabellen = array()
+		$db_ready = false
 		;
 	
 	function __construct($core)
@@ -29,7 +30,7 @@ class mysql
 			$this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
 		}
 		
-		# security, this info in not needed anymore.
+		# 'security', this info in not needed anymore.
 		unset($this->core->_database);
 		
 	}

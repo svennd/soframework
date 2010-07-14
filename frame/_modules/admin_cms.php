@@ -1,5 +1,5 @@
 <?php
-# plugin module - user system
+# plugin module - cms admin
 # Svenn D'Hert
 
 switch ($mode)
@@ -19,6 +19,7 @@ switch ($mode)
 	case "destruct" :
 		# this will remove the tags from html
 		# just to not tell the end-user to much info ;)
+		# to keep $page static we could do this inside template, revision work.
 		$core->cms->remove_tags();
 	break;
 }
