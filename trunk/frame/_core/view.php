@@ -1,24 +1,27 @@
 <?php
-# plugin module - template system
-# Svenn D'Hert
+# plugin module - view system (template sytem)
+# Svenn D'Hert 
 
 switch ($mode)
 {
 	case "read_config" :
 			$struct = array (
-						"name"		=> "Template system",
+						"name"		=> "view system",
 						"version"	=> "1.0.0",
 						"author"	=> "Svenn D\'Hert"
 						);
 		break;
 		
 	case "construct" :	
-		$core->template = new template($core);
+		$core->view = new view($core);
 		break;
 	
 	case "destruct" :
+		# remove tags from output
+		$core->view->remove_tags();
+		
 		# output the page.
-		echo $core->template->push_output();
+		echo $core->view->push_output();
 		break;
 }
 ?>

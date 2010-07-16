@@ -6,25 +6,30 @@ include('frame/main_frame.php');
 $core = new core();
 
 # loading the new module
-$core->load_modules('admin');
+$core->load_modules('admin_cms');
 
-$core->template->header = array(
+$core->view->header = array(
 								'title' 				=> 'voorbeeld bestand'
 							);
 
 $position = ( isset( $_GET['position'] ) ) ? (int) $_GET['position'] : false;
 
-$core->template->use_page('header');
+$core->view->use_page('header');
+
 if ( !$position )
-{
-	$core->template->edit_able_list = $core->cms->get_file_list();
-	$core->template->use_page('admin/cms/file_list');
+{	
+	# save list with edit-able files to view var
+	$core->view->edit_able_list = $core->admin_cms->get_file_list();
+	
+	# 
+	$core->view->use_page('admin/cms/file_list');
 }
 else if ( $position )
 {
 	# filename given & file is edit able
-	$file = ( isset( $_GET['file'] ) && in_array($_GET['file'], $core->cms->get_file_list()) ) ? $_GET['file'] : false;
-	$core->template->use_page('admin/cms/edit_file');
+	$file = ( isset( $_GET['file'] ) && in_array($_GET['file'], $core->admin_cms->get_file_list()) ) ? $_GET['file'] : false;
+	$core->view->use_page('admin/cms/edit_file');
+	$header['addit_header'] = 'test';
 }
 	 // $c = array(
 						// "old_txt" => array( 
@@ -34,11 +39,11 @@ else if ( $position )
 										// '<!-- TEXT -->eded<!-- TEXTEND -->'
 										// ) ,
 						// );
-// $core->cms->edit_file($c, 'index');
+// $core->admin_cms->edit_file($c, 'index');
 
 
 
-$core->template->use_page('footer');
+$core->view->use_page('footer');
 
 $core->close();
 

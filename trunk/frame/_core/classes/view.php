@@ -1,19 +1,22 @@
 <?php
 #######################
-#	file	: template.php
+#	file	: view.php
 #   author 	: Svenn D'Hert
 #	rev.	: 2
-#	f(x)	: template system
+#	f(x)	: view system
 ########################
 
-final class template
+final class view
 {
 	public 
 		$core,
-		$variables,
-		$page
+		$variables
 		;
 	
+	private
+		$page
+		;
+		
 	function __construct($core)
 	{
 		// reference to the core object
@@ -21,11 +24,11 @@ final class template
 	
 	}
 	
-	# adding new vars to the template space
+	# adding new vars to the view space
 	# i don't really like this way (magic), tho I don't see a other option at current.
 	# works like : 
-	# $core->template->test = 123;
-	# on template level looks like :
+	# $core->view->test = 123;
+	# on view level looks like :
 	# $test;
 	public function __set($name, $value)
 	{
@@ -60,6 +63,15 @@ final class template
 	public function push_output ()
 	{
 		return ( !empty($this->page) ) ? $this->page : $this->core->error( 1, "Pagina kon is niet aangemaakt", __FILE__, __LINE__);
+	}
+	
+	# removes visible ads in end-user output
+	public function remove_tags ()
+	{
+		if ( isset($this->page))
+		{	
+			$this->page = preg_replace( '/<!--(.+?)-->/', '', $this->page); 
+		}
 	}
 }
 

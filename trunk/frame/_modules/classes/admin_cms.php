@@ -6,7 +6,7 @@
 #	f(x)	: basic cms function
 ########################
 
-class cms
+class admin_cms
 {
 	public 
 		$core
@@ -110,15 +110,6 @@ class cms
 		}
 		# for some reason no backup was able to be build
 		return false;
-	}
-	
-	# removes visible ads in end-user output
-	public function remove_tags ()
-	{
-		if ( isset($this->core->template->page))
-		{	
-			$this->core->template->page = preg_replace( '/<!--(.+?)-->/', '', $this->core->template->page); 
-		}
 	}
 }
 ?>
