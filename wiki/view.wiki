@@ -1,0 +1,5 @@
+#core->view
+
+= Module details =
+name : view.php
+function : a simple 'template' system
