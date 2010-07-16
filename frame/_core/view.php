@@ -17,11 +17,17 @@ switch ($mode)
 		break;
 	
 	case "destruct" :
-		# remove tags from output
-		$core->view->remove_tags();
 		
+		# if saved then we need to use the buffer :)
+		if ( $core->view->save_page )
+		{
+			# remove tags from output
+			$core->view->remove_tags();
+		}
 		# output the page.
 		echo $core->view->push_output();
+
+		
 		break;
 }
 ?>

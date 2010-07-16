@@ -2,7 +2,7 @@
 #######################
 #	file	: view.php
 #   author 	: Svenn D'Hert
-#	rev.	: 2
+#	rev.	: 3
 #	f(x)	: view system
 ########################
 
@@ -10,7 +10,9 @@ final class view
 {
 	public 
 		$core,
-		$variables
+		$variables = array(),
+		$file_list = array(),
+		$save_page = false
 		;
 	
 	private
@@ -21,7 +23,6 @@ final class view
 	{
 		// reference to the core object
 		$this->core = $core;
-	
 	}
 	
 	# adding new vars to the view space
@@ -35,34 +36,62 @@ final class view
 		$this->variables[$name] = $value;
 	}
 	
+	public function save_page ( $bool )
+	{
+		$this->save_page = (bool) $bool;
+	}
+	
 	# 'parse' $file
 	public function use_page ($file)
 	{
-		# this makes sure, user doesn't get anything we don't want.
+		# if we use the output buffer we save the content
+		if ( $this->save_page )
+		{
+			# vars for the current file
+			if ( !empty($this->variables) )
+			{
+				extract($this->variables);
+			}
+			
+			if(file_exists($this->core->path . "frame/_template/" . $file . ".tpl"))
+			{
+				ob_start();
+					include($this->core->path . "frame/_template/" . $file . ".tpl");
+					
+				$this->page .= ob_get_contents();
+				
+				ob_end_clean();
+			}
+		}
+		# save the file and do it later ^_^
+		else
+		{
+			$this->file_list[] = $file;
+		}
+	}
+	
+	# load the page at once
+	private function load_full_page () 
+	{
+		# the variables $core->view-> variables get set here.
 		if ( !empty($this->variables) )
 		{
 			extract($this->variables);
 		}
 		
-		# load file
-		if(file_exists("frame/_template/" . $file . ".tpl"))
+		# load all the pages and output them
+		foreach ( $this->file_list as $file )
 		{
-			ob_start();
-			include("frame/_template/" . $file . ".tpl");
-			$output = ob_get_contents();
-			ob_end_clean();
-			
-			# return content
-			$this->page .= $output;
+			if(file_exists($this->core->path . "frame/_template/" . $file . ".tpl"))
+			{
+				include($this->core->path . "frame/_template/" . $file . ".tpl");
+			}
 		}
-		# maybe an error would be nice tho
-		return false;
 	}
 	
-	# pust output to screen
 	public function push_output ()
 	{
-		return ( !empty($this->page) ) ? $this->page : $this->core->error( 1, "Pagina kon is niet aangemaakt", __FILE__, __LINE__);
+		return ( !empty($this->page) ) ? $this->page : $this->load_full_page();
 	}
 	
 	# removes visible ads in end-user output
