@@ -1,5 +1,5 @@
 #core->view
 
-= Module details =
+=== Module details ===
 name : view.php<br/>
 function : a simple 'template' system<br/>
