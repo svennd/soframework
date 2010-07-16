@@ -8,7 +8,7 @@
 		<meta http-equiv="content-language" content="nl-be"/>
 
 		
-		<?php echo (isset($header['addit_header'])) ? "<meta name=\"title\"  content=" . $header['meta'] . "/>" : ''; ?>
+		<?php echo (isset($header['meta'])) ? "<meta name=\"title\"  content=" . $header['meta'] . "/>" : ''; ?>
 		<?php echo (isset($header['description'])) ? "<meta name=\"description\"  content=" . $header['description'] . "/>" : ''; ?>
 		<?php echo (isset($header['keywords'])) ? "<meta name=\"keywords\"  content=" . $header['keywords'] . "/>" : ''; ?>
 		

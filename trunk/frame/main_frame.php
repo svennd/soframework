@@ -1,8 +1,10 @@
 <?php
 #######################
-#	main_frame.php
-#   Svenn D'Hert
-#######################
+#	file	: main_frame.php
+#   author 	: Svenn D'Hert
+#	rev.	: 1
+#	f(x)	: main control class
+########################
 
 final class core
 {
@@ -104,11 +106,16 @@ final class core
 		# only var we really need
 		$this->path = (isset ($page_info['PATH'])) ? $page_info['PATH'] : "./";
 
-		if ( is_array($page_info) )
+		if ( is_array($page_info) && !empty($page_info) )
 		{
-			foreach ( $page_info as $v => $k )
+			# php 5 want all objects declared
+			$this->_page = new stdClass();
+			
+			foreach ( $page_info as $k => $v )
 			{
-				$this->_page->{$k} = $v;
+				# already got that one
+				if ( $k != 'PATH' )
+					$this->_page->{$k} = $v;
 			}
 		}
 		
@@ -123,9 +130,6 @@ final class core
 			{
 				$this->{$k} = $v;
 			}
-			
-			# make config unaccesable
-			unset($config);
 		}
 	}
 
