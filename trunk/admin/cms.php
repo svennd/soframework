@@ -11,7 +11,9 @@ $core->load_modules('admin_cms');
 # header info for view
 $core->view->header = array(
 								'title' 				=> 'Content Management',
-								'addit_header'			=> '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>'
+								'template_folder'		=> '../frame/_template',	
+								// 'addit_header'			=> '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>'
+								'addit_header'			=> '<script type="text/javascript" src="http://localhost/sof/jquery-1.4.2.min.js"></script>'
 							);
 
 # main switch
