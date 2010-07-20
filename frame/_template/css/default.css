@@ -20,3 +20,10 @@ body {
 h1{
 	font-size:1.7em;
 }
+
+#cms_editor {
+	position : fixed;
+	top: 25px;
+	right : 15px;
+	background-color:grey;
+}
