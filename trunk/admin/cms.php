@@ -35,6 +35,8 @@ else if ( $position )
 {
 	# filename given & file is edit able
 	$file = ( isset( $_GET['file'] ) && in_array($_GET['file'], $core->admin_cms->get_file_list()) ) ? $_GET['file'] : false;
+	
+	$core->view->page = $core->admin_cms->show_edit_page($file);
 	$core->view->use_page('admin/cms/edit_file');
 }
 	 // $c = array(
@@ -51,7 +53,7 @@ else if ( $position )
 # add footer to page
 $core->view->use_page('footer');
 
-
+print_r($_POST);
 $core->close();
 
 ?>

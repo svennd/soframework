@@ -20,7 +20,7 @@ class admin_cms
 	{
 		// reference to the core object
 		$this->core = $core;
-		$this->get_text_fields( $this->load('index'));
+		#$this->get_text_fields( $this->load('index'));
 	}
 	
 	# gets the wanted file
@@ -36,17 +36,52 @@ class admin_cms
 	# get all editable fields from a file (this is a slow proces)
 	private function get_text_fields ( $file_content )
 	{
-		if ( preg_match_all("/<!-- TEXT -->(.*?)<!-- TEXTEND -->/is", $file_content, $r) )
+		if ( preg_match_all("/<!--\s*?TEXT\s*?-->(.*?)<!--\s*?TEXTEND\s*-->/is", $file_content, $r) )
 		{
 			return $r;
 		}
 		return false;
 	}
 	
+	# 
+	public function show_edit_page ( $file )
+	{
+		$content = $this->load( $file );
+		$text_fields = $this->get_text_fields( $content );
+		$count = count( $text_fields['1'] );
+		
+		$i = 0;
+		while ( $i < $count )
+		{
+			# adding the edit fields
+			$content = preg_replace(
+									'/<!--\s*?TEXT\s*?-->(.*?)<!--\s*?TEXTEND\s*-->/is', 
+									'<div id="hide" class="link' . $i . '">
+									 $1&nbsp;
+									 <a href="#" class="link' . $i . '"><img src="' . $this->core->path . 'frame/_template/images/ico_edit.png" alt="edit" /></a>
+									 </div>
+									 <div id="text" class="toggle-item-link' . $i . '"><textarea name="edit_field[]">$1</textarea></div>'
+									, $content
+									, 1); # only once a time
+			$i++;
+		}
+		
+		# i know this aint the best nor propper way, but hey it works.
+		$content = '<form action="?save_page" method="POST" id="page_edit">' . $content . '</form>';
+		
+		return $this->remove_php($content);
+	}
+	
 	# this should be checked again, but since this is a fixed ( = private) i din't feel the need to implement this
 	public function get_file_list ()
 	{
 		return $this->edit_able;
+	}
+	
+	# removes php from template as it is never editable nor can it be parsed apropiate
+	private function remove_php( $string )
+	{
+		return preg_replace('/<\?p?h?p?(.*?)\?>/is', '' , $string);
 	}
 	
 	# edit the file, and text
@@ -95,7 +130,7 @@ class admin_cms
 			}
 		}
 	}
-	
+
 	private function backup ( $file, $content )
 	{
 		if(in_array($file, $this->edit_able))
