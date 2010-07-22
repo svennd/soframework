@@ -1,21 +1,40 @@
 <?php
-#######################
-#	file	: cache.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: sql caching system
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
 
+/**
+* cache class
+* @abstract
+*/
 final class cache
 {		
-	# path could be provided by core, tho I don't wanne include the complete core for only the path.
-	public function save ($name, $content, $path = './')
+	
+	public
+		$lifetime = 60 * 60 * 24 # 1 day
+		;
+		
+	/**
+	* initialize
+	* @param object $core
+	*/
+	function __construct($core)
 	{
-		# file name
-		$file_name = $name . '.cache';
-					
+		// reference to the core object
+		$this->core = $core;
+	}
+	
+	/**
+	* save array to file
+	* @param string $name
+	* @param array $content
+	*/
+	public function save ($name, $content)
+	{
 		# open / make file
-		$file = fopen($path . 'frame/_cache/' . $file_name, "w");
+		$file = fopen($this->core->path . 'main/_model/_cache/' . $name . '.cache', "w");
 		
 		# write to file, serialize is slow and cpu heavy process.
 		fputs($file, serialize($content));
@@ -24,33 +43,36 @@ final class cache
 		fclose($file); 
 	}
 	
-	public function get ($name, $path = './') 
+	/**
+	* get the file
+	* @param string $name
+	* @return string
+	*/
+	public function get ($name) 
 	{
-		# file name
-		$file = $name . '.cache';
-		
 		# check if file exists and check last edit time
-		if (file_exists($path . 'frame/_cache/' . $file) && filemtime($path . 'frame/_cache/' . $file) > (time() - 60 * 60 * 24)) 
+		if (file_exists($this->core->path . 'main/_model/_cache/' . $name . '.cache') && filemtime($this->core->path . 'frame/_cache/' . $name . '.cache') > (time() - 60 * 60 * 24)) 
 		{
 			# we found it :)
-			return unserialize(file_get_contents($path . 'frame/_cache/' . $file));
+			return unserialize(file_get_contents($path . 'frame/_cache/' . $name . '.cache'));
 		}
-		else
-		{
-			# no file found, considerd to make new
-			return false;
-		} 
+		return false;
 	}
 	
+	/**
+	* clean the cache
+	* @param string $name
+	* @return string
+	*/	
 	public function clean ()
 	{
-		while( false !== ($filename = readdir('./frame/_cache/')) )
+		while( false !== ($filename = readdir($this->core->path . 'main/_model/_cache/')) )
 		{
 			if( $filename != "." && $filename != ".." )
 			{
 				$filename = $directory. "/". $filename;
 
-				if( @filemtime($filename) < (time()-$seconds_old) )
+				if( @filemtime($filename) < (time() - $this->lifetime) )
 				{
 					@unlink($filename);
 				}

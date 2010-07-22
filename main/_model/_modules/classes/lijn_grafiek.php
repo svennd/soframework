@@ -1,13 +1,16 @@
 <?php
-#######################
-#	file	: lijn_grafiek.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: makes a line grafiek
-# 	note 	: 	The default font is set verdana.ttf. A font that is supported by 99.34% of the windows machines. (wiki cite)
-#				However due copyright restrictions, its not allowed to pack this in this framework.
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+* @note :  		The default font is set verdana.ttf. A font that is supported by 99.34% of the windows machines. (wiki quote)
+*				However due copyright restrictions, its not allowed to pack this in this framework.
+*/
 
+/**
+* makes line gfx class
+* @abstract
+*/
 final class lijn_grafiek {
 
 	# default settings
