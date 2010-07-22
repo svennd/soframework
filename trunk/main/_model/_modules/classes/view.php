@@ -1,51 +1,64 @@
 <?php
-#######################
-#	file	: view.php
-#   author 	: Svenn D'Hert
-#	rev.	: 3
-#	f(x)	: view system
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
 
+/**
+* view class
+* @abstract
+*/
 final class view
 {
 	public 
 		$core,
 		$variables = array(),
 		$file_list = array(),
-		$save_page = false
+		$user_buffer = false
 		;
 	
 	private
 		$page
 		;
-		
+	
+	/**
+	* initialize
+	* @param object $core
+	*/
 	function __construct($core)
 	{
 		// reference to the core object
 		$this->core = $core;
 	}
 	
-	# adding new vars to the view space
-	# i don't really like this way (magic), tho I don't see a other option at current.
-	# works like : 
-	# $core->view->test = 123;
-	# on view level looks like :
-	# $test;
+	/**
+	* set variables
+	* @param string $name
+	* @param mixed $value
+	*/
 	public function __set($name, $value)
 	{
 		$this->variables[$name] = $value;
 	}
 	
-	public function save_page ( $bool )
+	/**
+	* use the buffer or instand output
+	* @param bool $bool
+	*/
+	public function user_buffer ( $bool )
 	{
-		$this->save_page = (bool) $bool;
+		$this->user_buffer = (bool) $bool;
 	}
 	
-	# 'parse' $file
+	/**
+	* process the requested page
+	* @param string $file
+	*/
 	public function use_page ($file)
 	{
 		# if we use the output buffer we save the content
-		if ( $this->save_page )
+		if ( $this->user_buffer )
 		{
 			# vars for the current file
 			if ( !empty($this->variables) )
@@ -53,10 +66,10 @@ final class view
 				extract($this->variables);
 			}
 			
-			if(file_exists($this->core->path . "frame/_template/" . $file . ".tpl"))
+			if(file_exists($this->core->path . "main/_view/" . $file . ".tpl"))
 			{
 				ob_start();
-					include($this->core->path . "frame/_template/" . $file . ".tpl");
+					include($this->core->path . "main/_view/" . $file . ".tpl");
 					
 				$this->page .= ob_get_contents();
 				
@@ -70,7 +83,9 @@ final class view
 		}
 	}
 	
-	# load the page at once
+	/**
+	* no buffer used, include files
+	*/
 	private function load_full_page () 
 	{
 		# the variables $core->view-> variables get set here.
@@ -89,18 +104,14 @@ final class view
 		}
 	}
 	
+	/**
+	* generate output
+	* @return string
+	*/
 	public function push_output ()
 	{
-		return ( !empty($this->page) ) ? $this->page : $this->load_full_page();
-	}
-	
-	# removes visible ads in end-user output
-	public function remove_tags ()
-	{
-		if ( isset($this->page))
-		{	
-			$this->page = preg_replace( '/<!--(.+?)-->/', '', $this->page); 
-		}
+		# remove additional html content if possible
+		return ( !empty($this->page) ) ? preg_replace( '/<!--(.+?)-->/', '', $this->page) : $this->load_full_page();
 	}
 }
 

@@ -1,11 +1,14 @@
 <?php
-#######################
-#	file	: main_frame.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: main control class
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
 
+/**
+* import class
+* @abstract
+*/
 final class core
 {
 	public
@@ -13,14 +16,15 @@ final class core
 		$plugs = array()
 		;
 
+	/**
+	* initialize
+	* @param array
+	*/
 	function __construct($page_info = array())
 	{
 		// reference
 		$core = $this;
-		
-		// set error handeling (php4)
-		set_error_handler(array($core, 'error'));
-		
+			
 		// load configuration, for page, and full framework
 		$this->load_config($page_info);
 		
@@ -28,7 +32,9 @@ final class core
 		$this->core_handeling( 'construct' );
 	}
 	
-	# pseudo destructor
+	/**
+	* pseudo destructor
+	*/
 	public function close ()
 	{
 		# referentie
@@ -41,7 +47,10 @@ final class core
 		$this->core_handeling( 'destruct' );
 	}
 	
-	# script level module loader
+	/**
+	* load modules from script level
+	* @param mixed $modules
+	*/
 	public function load_modules ( $modules )
 	{
 		# more then one module load_modules( array('module1', 'module2') );
@@ -61,7 +70,9 @@ final class core
 		}
 	}
 	
-	# script level module destructor
+	/**
+	* unload modules from script level
+	*/
 	private function destroy_modules ( )
 	{
 		foreach ( $this->plugs as $module )
@@ -70,20 +81,27 @@ final class core
 		}
 	}
 	
-	# loading the modules by script defined
-	# does only load at pages where needed
+	/**
+	* handle modules
+	* @param string $file
+	* @param string $mode
+	*/
 	private function module_handeling( $file, $mode )
 	{
-		if ( is_file($this->path . 'frame/_modules/' . $file . '.php') )
+		if ( is_file($this->path . 'main/_model/_modules/' . $file . '.php') )
 		{
 			$core = $this;
-			# faster then include_once
-			( $mode == 'construct' ) ? include($this->path . 'frame/_modules/classes/' . $file . '.php') : '';
-			include($this->path . 'frame/_modules/' . $file. '.php');
+			# faster then include_once (?)
+			( $mode == 'construct' ) ? include($this->path . 'main/_model/_modules/classes/' . $file . '.php') : '';
+			include($this->path . 'main/_model/_modules/' . $file. '.php');
 		}
 	}
 	
-	# loading the main core, on each page
+	/**
+	* load modules who are considerd 'important'
+	* @param string $file
+	* @param string $mode
+	*/
 	private function core_handeling( $mode )
 	{
 		# core modules should be set in _config.php
@@ -94,13 +112,16 @@ final class core
 			foreach ($this->_core_modules[$mode] as $module)
 			{
 				# this method seems way faster then include_once();
-				( $mode == 'construct' ) ?  include ($this->path . 'frame/_core/classes/' . $module . '.php') : '';
-				include($this->path . 'frame/_core/' . $module . '.php');
+				( $mode == 'construct' ) ?  include ($this->path . 'main/_model/_modules/classes/' . $module . '.php') : '';
+				include($this->path . 'main/_model/_modules/' . $module . '.php');
 			}
 		}
 	}
 	
-	# load config file
+	/**
+	* load config
+	* @param array $page_info
+	*/
 	private function load_config ($page_info) 
 	{
 		# only var we really need
@@ -120,7 +141,7 @@ final class core
 		}
 		
 		# add it
-		include($this->path . '_config.php');
+		include($this->path . 'main/_config.php');
 			
 		# main config array
 		if ( isset($config) )
@@ -131,43 +152,6 @@ final class core
 				$this->{$k} = $v;
 			}
 		}
-	}
-
-	// error handeling
-	// http://www.phptuts.nl/view/35/6/
-	// E_ERROR, E_PARSE cannot be fetched :(
-	public static function error($i_err_level, $err_msg, $err_file = '', $err_line = '', $err_context = array())
-	{
-		$level_name = array (
-						1		=> 'User defined', # hehe i'm lazy. really.
-						2		=> 'Warning',
-						8		=> 'Notice',
-						256		=> 'Fatal error',
-						512		=> 'Warning',
-						1024	=> 'Notice',
-						1062	=> 'Database error'
-						);
-		
-		$s_err_level = ( isset($level_name[$i_err_level]) ) ? $level_name[$i_err_level] : 'Unknown error';
-	
-		# headers verzenden
-		if ( !headers_sent() )
-		{
-			header('HTTP/1.1 503 Service Temporarily Unavailable');
-		}
-		
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-				<html>
-				<head><title>A Problem has been found.</title>
-				</head>
-				<body>
-				<p>
-					Oops! An error occured. <br/> message : '. $err_msg.'<br/> error : '. $s_err_level .'<br/> line : '. $err_line .' ('.$err_file.')
-				</p>
-				</body>
-				</html>
-			';
-			exit;
 	}
 }
 

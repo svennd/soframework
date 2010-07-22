@@ -13,7 +13,7 @@ switch ($mode)
 		break;
 		
 	case "construct" :
-		$core->cache = new cache();
+		$core->cache = new cache($core);
 		break;
 }
 ?>
