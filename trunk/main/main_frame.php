@@ -24,7 +24,10 @@ final class core
 	{
 		// reference
 		$core = $this;
-			
+		
+		// undo magic_quotes
+		$this->escape_input();
+		
 		// load configuration, for page, and full framework
 		$this->load_config($page_info);
 		
@@ -151,6 +154,24 @@ final class core
 			{
 				$this->{$k} = $v;
 			}
+		}
+	}
+	
+	/**
+	* undo magic_quotes
+	*/	
+	private function escape_input()
+	{
+		function undo_magic_quotes($v)
+		{
+			return is_array($v) ? array_map('undo_magic_quotes', $v) : stripslashes($v);
+		}
+		 
+		if ( function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() )
+		{
+			$_GET    = array_map('undo_magic_quotes', $_GET);
+			$_POST   = array_map('undo_magic_quotes', $_POST);
+			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
 		}
 	}
 }

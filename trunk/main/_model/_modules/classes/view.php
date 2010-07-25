@@ -97,9 +97,9 @@ final class view
 		# load all the pages and output them
 		foreach ( $this->file_list as $file )
 		{
-			if(file_exists($this->core->path . "frame/_template/" . $file . ".tpl"))
+			if(file_exists($this->core->path . "main/_view/" . $file . ".tpl"))
 			{
-				include($this->core->path . "frame/_template/" . $file . ".tpl");
+				include($this->core->path . "main/_view/" . $file . ".tpl");
 			}
 		}
 	}

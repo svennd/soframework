@@ -10,12 +10,12 @@ $config = array (
 												'construct' => array(),
 												'destruct' 	=> array(),
 											),
-					"_database" 	=> array(											# database settings (MySQL plugin based)
-										"host" 				=> "",							# database host name
-										"username" 			=> "",							# database user name
-										"paswoord" 			=> "",							# database password
-										"database" 			=> ""							# database name
-									)
+					"_database" 	=> 	array(
+												"db_host" 				=> "",
+												"db_u_name" 			=> "",
+												"db_u_pas" 			=> "",
+												"db_name" 			=> ""
+											),
 					);
 					
 ?>

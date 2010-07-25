@@ -1,10 +1,14 @@
 <?php
-#######################
-#	file	: mysql.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: mysql handeling
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
+
+/**
+* view class
+* @abstract
+*/
 
 class mysql
 {
@@ -20,10 +24,10 @@ class mysql
 
 		// connection
 		if ( ! $this->db_ready = $this->connect(
-										$this->core->_database['host'], 
-										$this->core->_database['username'], 
-										$this->core->_database['paswoord'], 
-										$this->core->_database['database']
+										$this->core->_database['db_host'], 
+										$this->core->_database['db_u_name'], 
+										$this->core->_database['db_u_pass'], 
+										$this->core->_database['db_name']
 										))
 		{
 			// no connection

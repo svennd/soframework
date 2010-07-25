@@ -1,19 +1,9 @@
 <?php
 #   Svenn D'Hert
-include('frame/main_frame.php');
+include('main/main_frame.php');
 
 # initialisation w/o extra value's
 $core = new core();
-
-# example load of form module
-$core->load_modules('form');
-	# the functions defined in 'form' class can now be called like :
-	# $core->form->function();
-
-# additional setting 
-# this saves the page, and makes $page edit able.
-# by default there will be no comment tags in output (who might be used by cms/file editors)
-$core->view->save_page(true);
 
 # information needed for header.tpl (this can be done in an optional module "header.php", an editted by givin $page_info in initialiser)
 $core->view->header = array(
