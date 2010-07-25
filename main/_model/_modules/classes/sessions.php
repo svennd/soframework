@@ -1,11 +1,15 @@
 <?php
-#######################
-#	file	: sessions.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: session system
-########################
-class session
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
+
+/**
+* session class
+* @abstract
+*/
+final class session
 {
 	public
 			$core,
@@ -17,7 +21,11 @@ class session
 	private 
 			$hash
 			;
-	
+			
+	/**
+	* initialize
+	* @param object $core
+	*/
 	function __construct($core)
 	{
 		# ref
@@ -97,13 +105,21 @@ class session
 
 	}
 	
-	# get a item from array
+	/**
+	* get an item from session
+	* @param string $k
+	* @param bool $default
+	*/
 	function get($k, $default = FALSE)
 	{
 		return isset($this->contents[$k]) ? $this->contents[$k] : $default;
 	}
 	
-	# set item in array
+	/**
+	* set an item in session
+	* @param string $k
+	* @param bool $default
+	*/
 	function put($k, $v = FALSE)
 	{
 		if ( is_array($k) )
@@ -119,13 +135,17 @@ class session
 		}
 	}
 	
-	# clean content
+	/**
+	* clean content
+	*/
 	function reset()
 	{
 		$this->contents = array();
 	}
 
-	# save content to db
+	/**
+	* safe to database
+	*/
 	function end()
 	{
 		# update database

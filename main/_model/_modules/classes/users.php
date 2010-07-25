@@ -1,20 +1,28 @@
 <?php
-#######################
-#	file	: users.php
-#   author 	: Svenn D'Hert
-#	rev.	: 1
-#	f(x)	: users system
-########################
+/**
+* @package SoFramwork
+* @copyright 2010 Svenn D'Hert
+* @license http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License
+*/
 
-class user
+/**
+* view class
+* @abstract
+*/
+final class user
 {
 	#	Levels :
 	#	banned = -1, guest = 0, user = 1, moderator = 2, admin = 3, developer = 4
 	
 	public
-		$core
+		$core,
+		$salt = 'blaat123',
 		;
 	
+	/**
+	* initialize
+	* @param object $core
+	*/
 	function __construct($core)
 	{
 		// reference to the core object
@@ -34,15 +42,23 @@ class user
 		}
 	}
 	
-	# registratie
-	public function registration ($name, $password, $password_confirm, $email)
+	/**
+	* set salt to non default value
+	* @param string $salt
+	*/
+	public function set_salt ($salt)
 	{
-		if ($password != $password_confirm) 
-		{
-			$this->core->template->user_error("Registratie niet gelukt", "Paswoorden komen niet overeen.", $error_list = array());
-			return false;
-		}
-		
+		$this->salt = $salt;
+	}
+	
+	/**
+	* registrate new user
+	* @param string $name
+	* @param string $password
+	* @param string $email
+	*/
+	public function registration ($name, $password, $email)
+	{
 		# check user already exist
 		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($name) . '" LIMIT 1', __FILE__, __LINE__ );
 		
@@ -70,7 +86,6 @@ class user
 			{
 				if ( !$this->core->user->login ($name, $password) )
 				{
-					$this->core->template->user_error("Registratie niet gelukt", "login werkt niet.", $error_list = array());
 					return false;
 				}
 				return $insert_id;
@@ -78,14 +93,17 @@ class user
 		}
 		else
 		{
-			$this->core->template->user_error("Registratie niet gelukt", "login werkt niet.", $error_list = array());
 			return false;
 		}
 		return false;
 	}
 	
-	# gebruikers inlog
-	public function login($user, $password)
+	/**
+	* user login
+	* @param string $name
+	* @param string $password
+	*/
+	public function login($name, $password)
 	{
 		# gebruiker is nog niet gekend
 		# default geeft sowieso bool terug
@@ -116,7 +134,11 @@ class user
 		return false;
 	}
 	
-	# user logout
+	/**
+	* user logout
+	* @param string $name
+	* @param string $password
+	*/
 	public function logout ()
 	{	
 		# alle inhoud verwijderen
@@ -126,34 +148,54 @@ class user
 		$this->core->session->end();
 	}
 	
-	# is gebruiker logged 
+	/**
+	* is user logged in
+	* @return bool
+	*/
 	public function is_logged()
 	{
 		# mss een andere manier ?
 		return ( $this->core->session->get('user_level') >= 1) ? true : false;
 	}
 
-	# is admin, is gast, is banned ...
+	/**
+	* what level is user
+	* @return int
+	*/
 	public function is_level($level)
 	{
 		return ( $this->core->session->get('user_level') >= $level ) ? true : false;
 	}
 	
+	/**
+	* get user id
+	* @return int
+	*/
 	public function get_user_id()
 	{
 		return $this->core->session->get('user_id');
 	}
 	
+	/**
+	* get username from id
+	* @param int $id
+	* @return string
+	*/
 	public function id_to_user($id)
 	{
 		$this->core->db->sql('SELECT username FROM `user_data` WHERE `id` = "' . $id . '" LIMIT 1;', __FILE__, __LINE__);
 		return ( isset($this->core->db->result_output) ) ? $this->core->db->result_output['0']['username'] : "gast" ;		
 	}
 	
-	# maak paswoord
+	/**
+	* is user logged in
+	* @param string $user
+	* @param string $password
+	* @return string
+	*/
 	private function make_pass_hash ($user, $password)
 	{
-		return hash('sha256', 'blaat123' . strtolower($user) . $password);
+		return hash('sha256', $this->salt . strtolower($user) . $password);
 	}
 	
 }
