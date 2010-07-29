@@ -1,6 +1,6 @@
 <?php
 #   Svenn D'Hert
-include('../frame/main_frame.php');
+include('../main/main_frame.php');
 
 # initialisation w/o extra value's
 $core = new core(array('PATH' => '../'));
@@ -11,7 +11,7 @@ $core->load_modules('admin_cms');
 # header info for view
 $core->view->header = array(
 								'title' 				=> 'Content Management',
-								'template_folder'		=> '../frame/_template',	
+								'template_folder'		=> '../main/_view',	
 								// 'addit_header'			=> '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>'
 								'addit_header'			=> '<script type="text/javascript" src="http://localhost/sof/jquery-1.4.2.min.js"></script>'
 							);

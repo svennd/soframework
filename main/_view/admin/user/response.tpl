@@ -1,0 +1,1 @@
+<h1>Actie : <?php echo $succes; ?></h1><a href='?'>User Management</a> &rsaquo; <?php echo (isset($delete)) ? 'removed a user.' : 'user info changed.'; ?><br/><br/><p>	<?php echo $msg; ?></p>
