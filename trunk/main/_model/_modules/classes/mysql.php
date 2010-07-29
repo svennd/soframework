@@ -17,6 +17,10 @@ class mysql
 		$db_ready = false
 		;
 	
+	/**
+	* initialize
+	* @param object $core
+	*/
 	function __construct($core)
 	{
 		// reference to the core object
@@ -31,7 +35,7 @@ class mysql
 										))
 		{
 			// no connection
-			$this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+			$core->log->save('MySQL error :'. mysql_error(), 'error_log');
 		}
 		
 		# 'security', this info in not needed anymore.
@@ -39,17 +43,24 @@ class mysql
 		
 	}
 	
+	/**
+	* connect
+	* @param string $host
+	* @param string $user
+	* @param string $password
+	* @param string $db
+	*/
 	private function connect($host, $user, $password, $db )
 	{
 		// mysql connection
-		$this->db_link = mysql_connect($host, $user, $password) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$this->db_link = mysql_connect($host, $user, $password) or $core->log->save('MySQL error :'. mysql_error(), 'error_log');
 		if (!$this->db_link)
 		{
 			return false;
 		}
 		
 		// database selection
-		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$db_selected = mysql_select_db($db, $this->db_link) or $core->log->save('MySQL error :'. mysql_error(), 'error_log');
 		if (!$db_selected)
 		{
 			return false;
@@ -58,7 +69,10 @@ class mysql
 		return true;
 	}
 	
-	# escape function
+	/**
+	* escape vars
+	* @param mixed $v
+	*/
 	public function esc ($v)
 	{
 		if ( is_array($v) )
@@ -70,15 +84,19 @@ class mysql
 		return mysql_real_escape_string($v);
 	}
 	
+	/**
+	* run a query
+	* @param string $query
+	* @param string $file
+	* @param string $line
+	* @return mixed
+	*/
 	public function sql ($query, $file, $lijn)
 	{		
 		# send the query
-		$result = mysql_query($query) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$result = mysql_query($query) or $this->core->log->save( $query . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
 				
 		# dit verwijderd spaties & enters
-		# vb : sql(' SELECT ...
-		# sql('
-		#		SELECT ...
 		$query = trim(preg_replace('/\s+/', ' ', $query));
 		
 		# verwerk de resultaten
@@ -88,19 +106,24 @@ class mysql
 			if ( preg_match('/^(SELECT|SHOW|EXPLAIN)/i', $query) )
 			{
 				# fix ; in het geval deze al gezet is tijdens deze pagina.
-				$this->result_output = array();
+				$this->result = array();
 				
 				# lees de resultaten uit
 				while ( $d = mysql_fetch_array($result) )
 				{
-					$this->result_output[] = $d;
+					$this->result[] = $d;
 				}
 				
 				# clean up the request
 				mysql_free_result( $result );
 				
+				if (preg_match('/LIMIT\s?0?\s?,?\s?1\s?;/i', $query))
+				{
+					$this->result = $this->result['0'];
+				}
+				
 				# return
-				return $this->result_output;
+				return $this->result;
 			}
 			# delete, insert, (...) geven een bool terug
 			else
@@ -108,17 +131,24 @@ class mysql
 				if( preg_match('/^INSERT/i', $query) )
 				{
 					# id van de nieuwe rij
-					return $this->result_output = mysql_insert_id();
+					return $this->result = mysql_insert_id();
 				}
 				else
 				{
 					# aantal aangepaste rijen, indien 0 failed.
-					return $this->result_output =  mysql_affected_rows();
+					return $this->result =  mysql_affected_rows();
 				}
 			}
 		}
 	}
-	
+
+	/**
+	* close connection with database
+	* @param string $query
+	* @param string $file
+	* @param string $line
+	* @return mixed
+	*/
 	public function close_connection ()
 	{
 		// close connection if made.

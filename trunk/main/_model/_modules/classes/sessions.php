@@ -30,9 +30,6 @@ final class session
 	{
 		# ref
 		$this->core = $core;
-
-		# make session
-		session_start();
 	
 		# fetch browser info
 		$userIP = !empty($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'] );
@@ -62,7 +59,7 @@ final class session
 			# get info from table
 			$core->db->sql('SELECT `contents` FROM `user_sessions` WHERE `id` = ' . $this->id . ' AND	`hash` = "' . $this->hash . '" LIMIT 1;', __FILE__, __LINE__);
 
-			if ( $r = $core->db->result_output )
+			if ( $r = $core->db->result )
 			{
 				# extract saved data from table
 				$this->contents = unserialize($r[0]['contents']);
@@ -100,7 +97,7 @@ final class session
 				;',__FILE__, __LINE__);
 				
 			# insert geeft mysql__insert_id
-			$this->id = $core->db->result_output;
+			$this->id = $core->db->result;
 		}
 
 	}
@@ -160,7 +157,7 @@ final class session
 		}
 		else
 		{
-			$this->core->error(1, "header is al verzonden", __FILE__, __LINE__);
+			$core->log->save('Session module error : header already send.', 'error_log');
 		}
 	}
 }
