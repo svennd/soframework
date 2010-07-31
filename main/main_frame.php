@@ -94,8 +94,6 @@ final class core
 		if ( is_file($this->path . 'main/_model/_modules/' . $file . '.php') )
 		{
 			$core = $this;
-			# faster then include_once (?)
-			( $mode == 'construct' ) ? include($this->path . 'main/_model/_modules/classes/' . $file . '.php') : '';
 			include($this->path . 'main/_model/_modules/' . $file. '.php');
 		}
 	}
