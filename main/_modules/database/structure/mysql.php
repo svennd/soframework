@@ -17,26 +17,22 @@ class mysql
 		$db_ready = false
 		;
 	
-	function __construct($core)
+	function __construct($core, $db_host, $db_u_name, $db_u_pass, $db_name)
 	{
 		// reference to the core object
 		$this->core = $core;
 
 		// connection
 		if ( ! $this->db_ready = $this->connect(
-										$this->core->_database['db_host'], 
-										$this->core->_database['db_u_name'], 
-										$this->core->_database['db_u_pass'], 
-										$this->core->_database['db_name']
+											$db_host,
+											$db_u_name,
+											$db_u_pass,
+											$db_name
 										))
 		{
 			// no connection
 			$this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
-		}
-		
-		# 'security', this info in not needed anymore.
-		unset($this->core->_database);
-		
+		}	
 	}
 	
 	private function connect($host, $user, $password, $db )

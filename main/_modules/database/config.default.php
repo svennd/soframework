@@ -8,17 +8,13 @@
 // no direct acces
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
-switch ($mode)
-{
-	// start the module
-	case "construct" :
-		
-				// include the class file
-				include $this->path . 'cache.php';
-				
-				// 'boot' the class
-				$this->cache = new cache($this);
-		break;
-}
+// configuration of database
+$host 		= '';
+$user 		= '';
+$password 	= '';
+$database 	= '';
+
+// database type or method
+$db_type 	= 'mysql';	# mysql, mysqli
 
 ?>

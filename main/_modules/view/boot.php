@@ -14,10 +14,15 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->path . 'cache.php';
+				include $this->path . 'view.php';
 				
 				// 'boot' the class
-				$this->cache = new cache($this);
+				$this->view = new view($this);
+		break;
+	
+	// end of database connection
+	case "destruct" :
+				$this->view->push_output();
 		break;
 }
 

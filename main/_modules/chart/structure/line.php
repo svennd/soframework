@@ -8,10 +8,10 @@
 */
 
 /**
-* makes line gfx class
+* makes line chart class
 * @abstract
 */
-final class lijn_grafiek {
+final class chart {
 
 	# default settings
 	public
@@ -40,7 +40,13 @@ final class lijn_grafiek {
 	private 
 			$img
 			;
-			
+		
+	# construction
+	public function __construct ( $chart_core )
+	{
+		$this->chart_core = $chart_core;
+	}
+	
 	# setter function
 	# as this is a not so much used class I can use this slower way of setting value's
 	public function __set ($name, $value)

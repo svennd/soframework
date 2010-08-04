@@ -30,9 +30,6 @@ final class session
 	{
 		# ref
 		$this->core = $core;
-
-		# make session
-		session_start();
 	
 		# fetch browser info
 		$userIP = !empty($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'] );
@@ -157,10 +154,6 @@ final class session
 		{
 			$absPath = str_replace('//', '/', preg_replace('/([^\/]+\/){' . ( substr_count(( $this->core->path == './' ? '' : $this->core->path ), '/') ) . '}$/', '', dirname(str_replace('\\', '/', $_SERVER['PHP_SELF'])) . '/'));
 			setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
-		}
-		else
-		{
-			$this->core->error(1, "header is al verzonden", __FILE__, __LINE__);
 		}
 	}
 }

@@ -112,8 +112,6 @@ final class core
 			$core = $this;
 			foreach ($this->_core_modules[$mode] as $module)
 			{
-				# this method seems way faster then include_once();
-				( $mode == 'construct' ) ?  include ($this->path . 'main/_model/_modules/classes/' . $module . '.php') : '';
 				include($this->path . 'main/_model/_modules/' . $module . '.php');
 			}
 		}
@@ -171,6 +169,23 @@ final class core
 			$_POST   = array_map('undo_magic_quotes', $_POST);
 			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
 		}
+	}
+	
+	/**
+	* register a handeling
+	* @param string $msg
+	* @param string $file
+	*/
+	function log($msg , $file = 'admin_log')
+	{
+		// try to open or make it, and set pointer to end of file
+		$fp = fopen($this->core->path . 'main/_model/_logs/' . $file . '.log', 'a+');
+		
+		// write to file
+		fwrite($fp, time() . (string) $msg . "\r\n");
+		
+		// close file
+		fclose($fp);
 	}
 }
 
