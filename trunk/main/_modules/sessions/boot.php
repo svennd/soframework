@@ -14,10 +14,15 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->path . 'cache.php';
+				include $this->path . 'sessions.php';
 				
 				// 'boot' the class
-				$this->cache = new cache($this);
+				$this->session = new session($this);
+		break;
+	
+	// end of database connection
+	case "destruct" :
+				$this->session->end();
 		break;
 }
 

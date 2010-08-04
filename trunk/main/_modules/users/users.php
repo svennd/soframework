@@ -197,7 +197,5 @@ final class user
 	{
 		return hash('sha256', $this->salt . strtolower($user) . $password);
 	}
-	
 }
-
 ?>
