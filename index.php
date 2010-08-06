@@ -5,6 +5,8 @@ include('main/main_frame.php');
 # initialisation w/o extra value's
 $core = new core();
 
+// $core->auto_load_on();
+
 # information needed for header.tpl (this can be done in an optional module "header.php", an editted by givin $page_info in initialiser)
 $core->view->header = array(
 								'title' 				=> 'voorbeeld bestand'

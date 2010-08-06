@@ -14,12 +14,11 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->module_path . 'admin_cms.php';
+				include $this->path . 'users.php';
 				
 				// 'boot' the class
-				$this->admin_cms = new admin_cms($this);
+				$this->user = new user($this);
 		break;
-	
 }
 
 ?>

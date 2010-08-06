@@ -14,7 +14,7 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->path . 'view.php';
+				include $this->module_path . 'view.php';
 				
 				// 'boot' the class
 				$this->view = new view($this);

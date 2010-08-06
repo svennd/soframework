@@ -6,14 +6,16 @@
 */
 
 /**
-* import class
+* structural core class
 * @abstract
 */
 final class core
 {
 	public
 		$path,
-		$plugs = array()
+		$auto_load 				= false,
+		$allow_structure_cache 	= true,
+		$mods 					= array()
 		;
 
 	/**
@@ -33,6 +35,50 @@ final class core
 		
 		// load core modules
 		$this->core_handeling( 'construct' );
+	}
+	
+	/**
+	* when auto_load is set to true, all available modules will be loaded
+	*/	
+	public function auto_load_on ()
+	{
+		$naf = array('.svn', '.', '..');
+		$this->auto_load = true;
+		
+		// reading dir is slow so we 'cache' all dirs if thats allowed
+		if ( $this->allow_structure_cache && file_exists($this->path . 'main/_modules/mod.cache') )
+		{
+			// we use the cached file
+			$this->mods = unserialize(file_get_contents($this->path . 'main/_modules/mod.cache'));
+		}
+		// no file or not allowed to cache
+		else
+		{
+			// open dir
+			if ( $handle = opendir($this->path . 'main/_modules/') )
+			{
+				//
+				while (false !== ($dir = readdir($handle))) {
+					if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $naf)) {
+						$this->mods[] = $dir;
+					}
+				}
+				closedir($handle);
+			}
+			if ( $this->allow_structure_cache )
+			{
+				// open / make file
+				$file = fopen($this->path . 'main/_modules/mod.cache', "w");
+				
+				// write to file, serialize is slow and cpu heavy process.
+				fputs($file, serialize($this->mods));
+				
+				// close file
+				fclose($file);
+			}
+		}
+		// load all modules 
+		$this->load_modules($this->mods);
 	}
 	
 	/**
@@ -56,20 +102,32 @@ final class core
 	*/
 	public function load_modules ( $modules )
 	{
-		# more then one module load_modules( array('module1', 'module2') );
-		if ( is_array($modules) )
+		// auto load has been set
+		if ( $auto_load )
 		{
-			foreach ( $modules as $module )
+			foreach ( $this->mods as $module )
 			{
-				$this->plugs[] = $module;
 				$this->module_handeling ( $module, 'construct' );
 			}
 		}
-		# only 1 module string like given load_modules('module1');
+		// not all modules have to be loaded
 		else
 		{
-			$this->plugs[] = $modules;
-			$this->module_handeling ( $modules, 'construct' );
+			# more then one module load_modules( array('module1', 'module2') );
+			if ( is_array($modules) )
+			{
+				foreach ( $modules as $module )
+				{
+					$this->mods[] = $module;
+					$this->module_handeling ( $module, 'construct' );
+				}
+			}
+			# only 1 module string like given load_modules('module1');
+			else
+			{
+				$this->mods[] = $modules;
+				$this->module_handeling ( $modules, 'construct' );
+			}
 		}
 	}
 	
@@ -78,7 +136,7 @@ final class core
 	*/
 	private function destroy_modules ( )
 	{
-		foreach ( $this->plugs as $module )
+		foreach ( $this->mods as $module )
 		{
 			$this->module_handeling ( $module, 'destruct' );
 		}
@@ -89,12 +147,12 @@ final class core
 	* @param string $file
 	* @param string $mode
 	*/
-	private function module_handeling( $file, $mode )
+	private function module_handeling( $module, $mode )
 	{
-		if ( is_file($this->path . 'main/_model/_modules/' . $file . '.php') )
+		if ( is_file($this->path . 'main/_modules/' . $module . '/boot.php') )
 		{
 			$core = $this;
-			include($this->path . 'main/_model/_modules/' . $file. '.php');
+			include($this->path . 'main/_modules/' . $module . '/boot.php');
 		}
 	}
 	
@@ -112,7 +170,8 @@ final class core
 			$core = $this;
 			foreach ($this->_core_modules[$mode] as $module)
 			{
-				include($this->path . 'main/_model/_modules/' . $module . '.php');
+				$this->module_path = $this->path . 'main/_modules/' . $module . '/';
+				include($this->path . 'main/_modules/' . $module . '/boot.php');
 			}
 		}
 	}
