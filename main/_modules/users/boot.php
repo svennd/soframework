@@ -14,7 +14,7 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->path . 'users.php';
+				include $this->module_path . 'users.php';
 				
 				// 'boot' the class
 				$this->user = new user($this);
