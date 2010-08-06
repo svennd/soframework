@@ -14,7 +14,7 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->module_path . 'cache.php';
+				include $module_path . 'cache.php';
 				
 				// 'boot' the class
 				$this->cache = new cache($this);

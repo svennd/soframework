@@ -103,7 +103,7 @@ final class core
 	public function load_modules ( $modules )
 	{
 		// auto load has been set
-		if ( $auto_load )
+		if ( $this->auto_load )
 		{
 			foreach ( $this->mods as $module )
 			{
@@ -152,6 +152,7 @@ final class core
 		if ( is_file($this->path . 'main/_modules/' . $module . '/boot.php') )
 		{
 			$core = $this;
+			$module_path = $this->path . 'main/_modules/' . $module . '/';
 			include($this->path . 'main/_modules/' . $module . '/boot.php');
 		}
 	}
@@ -170,7 +171,7 @@ final class core
 			$core = $this;
 			foreach ($this->_core_modules[$mode] as $module)
 			{
-				$this->module_path = $this->path . 'main/_modules/' . $module . '/';
+				$module_path = $this->path . 'main/_modules/' . $module . '/';
 				include($this->path . 'main/_modules/' . $module . '/boot.php');
 			}
 		}
@@ -238,7 +239,7 @@ final class core
 	function log($msg , $file = 'admin_log')
 	{
 		// try to open or make it, and set pointer to end of file
-		$fp = fopen($this->core->path . 'main/_model/_logs/' . $file . '.log', 'a+');
+		$fp = fopen($this->path . 'main/_logs/' . $file . '.log', 'a+');
 		
 		// write to file
 		fwrite($fp, time() . (string) $msg . "\r\n");

@@ -104,14 +104,14 @@ else
 				{
 					$core->view->succes = 'succes';
 					$core->view->msg = 'Gebruiker succesvol verwijderd.';
-					$core->log->save('admin_delete user:' . $user_id);
+					$core->log('admin_delete user:' . $user_id);
 					$core->view->use_page('admin/user/response');
 				}
 				else
 				{
 					$core->view->succes = 'niet gelukt succes';
 					$core->view->msg = 'Er is iets fout gelopen bij het verwijderen van deze gebruiker.';
-					$core->log->save('fail admin_delete user:' . $user_id);
+					$core->log('fail admin_delete user:' . $user_id);
 					$core->view->use_page('admin/user/response');
 				}
 			}
@@ -126,14 +126,14 @@ else
 					{
 						$core->view->succes = 'succes';
 						$core->view->msg = 'gebruikersinfo succesvol gewijzigd.';
-						$core->log->save('admin_edit_user user:' . $user_id);
+						$core->log('admin_edit_user user:' . $user_id);
 						$core->view->use_page('admin/user/response');
 					}
 					else
 					{
 						$core->view->succes = 'niet gelukt succes';
 						$core->view->msg = 'Er is iets fout gelopen bij het aanpassen van de gebruikers info.';
-						$core->log->save('fail admin_edit_user user:' . $user_id);
+						$core->log('fail admin_edit_user user:' . $user_id);
 						$core->view->use_page('admin/user/response');
 					}
 			}

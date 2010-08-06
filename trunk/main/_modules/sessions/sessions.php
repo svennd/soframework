@@ -97,7 +97,7 @@ final class session
 				;',__FILE__, __LINE__);
 				
 			# insert geeft mysql__insert_id
-			$this->id = $core->db->result_output;
+			$this->id = $core->db->result;
 		}
 
 	}

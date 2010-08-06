@@ -31,21 +31,21 @@ class mysql
 										))
 		{
 			// no connection
-			$this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+			$this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
 		}	
 	}
 	
 	private function connect($host, $user, $password, $db )
 	{
 		// mysql connection
-		$this->db_link = mysql_connect($host, $user, $password) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
 		if (!$this->db_link)
 		{
 			return false;
 		}
 		
 		// database selection
-		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
 		if (!$db_selected)
 		{
 			return false;
@@ -69,7 +69,7 @@ class mysql
 	public function sql ($query, $file, $lijn)
 	{		
 		# send the query
-		$result = mysql_query($query) or $this->core->error(mysql_errno(), mysql_error(), __FILE__, __LINE__);
+		$result = mysql_query($query) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
 				
 		# dit verwijderd spaties & enters
 		# vb : sql(' SELECT ...
@@ -84,19 +84,24 @@ class mysql
 			if ( preg_match('/^(SELECT|SHOW|EXPLAIN)/i', $query) )
 			{
 				# fix ; in het geval deze al gezet is tijdens deze pagina.
-				$this->result_output = array();
+				$this->result = array();
 				
 				# lees de resultaten uit
 				while ( $d = mysql_fetch_array($result) )
 				{
-					$this->result_output[] = $d;
+					$this->result[] = $d;
 				}
 				
 				# clean up the request
 				mysql_free_result( $result );
 				
+				if (preg_match('/LIMIT\s?0?\s?,?\s?1\s?;/i', $query))
+				{
+					$this->result = $this->result['0'];
+				}
+
 				# return
-				return $this->result_output;
+				return $this->result;
 			}
 			# delete, insert, (...) geven een bool terug
 			else
@@ -104,12 +109,12 @@ class mysql
 				if( preg_match('/^INSERT/i', $query) )
 				{
 					# id van de nieuwe rij
-					return $this->result_output = mysql_insert_id();
+					return $this->result = mysql_insert_id();
 				}
 				else
 				{
 					# aantal aangepaste rijen, indien 0 failed.
-					return $this->result_output =  mysql_affected_rows();
+					return $this->result =  mysql_affected_rows();
 				}
 			}
 		}

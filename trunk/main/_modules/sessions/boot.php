@@ -14,7 +14,7 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->module_path . 'sessions.php';
+				include $module_path . 'sessions.php';
 				
 				// 'boot' the class
 				$this->session = new session($this);
