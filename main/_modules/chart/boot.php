@@ -14,7 +14,7 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $this->module_path . 'chart.php';
+				include $module_path . 'chart.php';
 				
 				// 'boot' the class
 				$this->chart = new chart($this);

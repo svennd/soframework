@@ -16,7 +16,7 @@ final class user
 	
 	public
 		$core,
-		$salt = 'blaat123',
+		$salt = 'blaat123'
 		;
 	
 	/**
@@ -53,18 +53,18 @@ final class user
 	
 	/**
 	* registrate new user
-	* @param string $name
+	* @param string $user
 	* @param string $password
 	* @param string $email
 	*/
-	public function registration ($name, $password, $email)
+	public function registration ($user, $password, $email, $level = 1, $admin_register = false)
 	{
 		# check user already exist
-		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($name) . '" LIMIT 1', __FILE__, __LINE__ );
+		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($user) . '" LIMIT 1', __FILE__, __LINE__ );
 		
-		if ( count($this->core->db->result_output) == 0 )
+		if ( count($this->core->db->result) == 0 )
 		{
-			$pass_hash = $this->make_pass_hash($name, $password);
+			$pass_hash = $this->make_pass_hash($user, $password);
 			
 			$this->core->db->sql("INSERT INTO 
 				`user_data` (
@@ -74,19 +74,22 @@ final class user
 						`email`,
 						`reg_date`
 						) VALUES (
-						'" . $this->core->db->esc($name) . "', 
-						1, 
+						'" . $this->core->db->esc($user) . "', 
+						" . $level . ", 
 						'" . $pass_hash . "', 
 						'" . $this->core->db->esc($email) . "',
 						NOW()
 						);",
 						__FILE__, __LINE__);
 						
-			if ( $insert_id = $this->core->db->result_output )
+			if ( $insert_id = $this->core->db->result )
 			{
-				if ( !$this->core->user->login ($name, $password) )
+				if ( $admin_register == false )
 				{
-					return false;
+					if ( !$this->core->user->login ($user, $password) )
+					{
+						return false;
+					}
 				}
 				return $insert_id;
 			}
@@ -100,10 +103,10 @@ final class user
 	
 	/**
 	* user login
-	* @param string $name
+	* @param string $user
 	* @param string $password
 	*/
-	public function login($name, $password)
+	public function login($user, $password)
 	{
 		# gebruiker is nog niet gekend
 		# default geeft sowieso bool terug
@@ -116,7 +119,7 @@ final class user
 
 			# gebruiker ophalen
 			# lazy evaluation (?)
-			if ( isset($this->core->db->result_output) && $r = $this->core->db->result_output['0'] )
+			if ( isset($this->core->db->resul) && $r = $this->core->db->result )
 			{
 				# user is found, lets set up his data
 				$this->core->session->put(array(
@@ -184,7 +187,7 @@ final class user
 	public function id_to_user($id)
 	{
 		$this->core->db->sql('SELECT username FROM `user_data` WHERE `id` = "' . $id . '" LIMIT 1;', __FILE__, __LINE__);
-		return ( isset($this->core->db->result_output) ) ? $this->core->db->result_output['0']['username'] : "gast" ;		
+		return ( isset($this->core->db->result) ) ? $this->core->db->result['username'] : "gast" ;		
 	}
 	
 	/**
@@ -197,5 +200,94 @@ final class user
 	{
 		return hash('sha256', $this->salt . strtolower($user) . $password);
 	}
+	
+	/**
+	* edit user info
+	* @param string $user
+	* @return bool
+	*/
+	public function edit_user_info ( $user_id, $user, $password, $email, $level, $extra_values = array())
+	{
+		if ( isset($password) && !isset($user) )
+		{
+			return false;
+		}
+		
+		if ( !empty ($extra_values) )
+		{
+			$extra_data = '';
+			foreach ($extra_value as $key => $value)
+			{
+				$extra_data .= '`' . $key . '` = "' . $value . '",';
+			}
+		}
+		else
+		{
+			$extra_data = '';
+		}
+		
+		# short notation
+		$db = $this->core->db;
+		
+		# make pass hash
+		$pass_hash = $this->make_pass_hash ( $user, $password );
+		
+		# make query :)
+		$db->sql ('
+								UPDATE 
+									`user_data`
+								SET
+									' . (isset ($user) ? '`username`= "' . $db->esc($user) . '",' : '')  . '
+									' . (isset ($password) ? '`pass_hash`= "' . $db->esc($pass_hash) . '",' : '')  . '
+									' . (isset ($email) ? '`email`= "' . $db->esc($email) . '",' : '')  . '
+									' . (isset ($level) ? '`level` = ' . $level . ',' : '')  . '
+									' . $extra_data .'
+									`edit_date` = NOW()
+								WHERE
+									user_data.id = ' . $user_id . '
+								',
+							__FILE__,
+							__LINE__
+								);
+		return true;
+		
+	}
+	
+	/**
+	* show all users
+	* @return array
+	*/
+	public function show_all_users ( $limit = false )
+	{
+		if ( $limit )
+		{
+			return $this->core->db->sql('
+								SELECT 
+									user_data.id,
+									user_data.username, 
+									user_data.level, 
+									user_data.reg_date, 
+									user_data.last_login_date 
+								FROM 
+									user_data 
+								LIMIT 0, ' . $limit . ';'
+								, __FILE__, __LINE__);
+		}
+		else
+		{
+			return $this->core->db->sql('
+								SELECT 
+									user_data.id, 
+									user_data.username, 
+									user_data.level, 
+									user_data.reg_date, 
+									user_data.last_login_date 
+								FROM 
+									user_data 
+								;'
+								, __FILE__, __LINE__);
+		}
+	}
 }
+
 ?>
