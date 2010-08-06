@@ -9,7 +9,7 @@
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
 // check if we got a config file
-if ( !file_exist($this->path . 'config.php') ){ exit('Please fill in /main/_modules/database/config.php, there is an example file config.default.php.'); }
+if ( !file_exist($this->module_path . 'config.php') ){ exit('Please fill in /main/_modules/database/config.php, there is an example file config.default.php.'); }
 
 switch ($mode)
 {
@@ -17,9 +17,9 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				if ( file_exist($this->path . 'structure/' . $db_type . '.php') )
+				if ( file_exist($this->module_path . 'structure/' . $db_type . '.php') )
 				{
-					include $this->path . 'structure/' . $db_type . '.php';
+					include $this->module_path . 'structure/' . $db_type . '.php';
 				}
 				
 				// 'boot' the class
