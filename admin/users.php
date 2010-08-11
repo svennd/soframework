@@ -49,7 +49,7 @@ elseif ( $add_user )
 		$user_level = (isset($_POST['level'])) ? (int) $_POST['level']: '';
 		if ( $return = $core->user->registration ($user_name, $user_pass, $user_email, $user_level, true))
 		{
-			$core->log->save('admin_add_user user:' . $return);
+			$core->log('admin_add_user user:' . $return);
 			
 			$core->view->succes = 'succes';
 			$core->view->msg = 'user succesfull added.';
@@ -57,7 +57,7 @@ elseif ( $add_user )
 		}
 		else
 		{
-			$core->log->save('fail admin_add_user user: not_set');
+			$core->log('fail admin_add_user user: not_set');
 			
 			$core->view->succes = 'niet gelukt succes';
 			$core->view->msg = 'Er is iets fout gelopen bij het invoegen van de gebruikers info.';
