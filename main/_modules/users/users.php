@@ -163,7 +163,7 @@ final class user
 
 	/**
 	* what level is user
-	* @return int
+	* @return bool
 	*/
 	public function is_level($level)
 	{

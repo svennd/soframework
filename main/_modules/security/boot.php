@@ -12,14 +12,17 @@ switch ($mode)
 {
 	// start the module
 	case "construct" :
-		
-				// include the class file
-				include $module_path . 'admin_cms.php';
 				
-				// 'boot' the class
-				$this->admin_cms = new admin_cms($this);
+				// include configuration for module
+				include $module_path . 'config.php';
+				
+				if ( $detection )
+				{
+					// include the check file
+					include $module_path . 'input_check.php';
+				}
+				
 		break;
-	
 }
 
 ?>

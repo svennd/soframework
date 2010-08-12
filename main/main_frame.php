@@ -45,38 +45,9 @@ final class core
 		$naf = array('.svn', '.', '..');
 		$this->auto_load = true;
 		
-		// reading dir is slow so we 'cache' all dirs if thats allowed
-		if ( $this->allow_structure_cache && file_exists($this->path . 'main/_modules/mod.cache') )
-		{
-			// we use the cached file
-			$this->mods = unserialize(file_get_contents($this->path . 'main/_modules/mod.cache'));
-		}
-		// no file or not allowed to cache
-		else
-		{
-			// open dir
-			if ( $handle = opendir($this->path . 'main/_modules/') )
-			{
-				//
-				while (false !== ($dir = readdir($handle))) {
-					if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $naf)) {
-						$this->mods[] = $dir;
-					}
-				}
-				closedir($handle);
-			}
-			if ( $this->allow_structure_cache )
-			{
-				// open / make file
-				$file = fopen($this->path . 'main/_modules/mod.cache', "w");
-				
-				// write to file, serialize is slow and cpu heavy process.
-				fputs($file, serialize($this->mods));
-				
-				// close file
-				fclose($file);
-			}
-		}
+		// use cache file, if there is one
+		$this->mods = (file_exists($this->path . 'main/_modules/mod.cache')) ? unserialize(file_get_contents($this->path . 'main/_modules/mod.cache')) : $this->get_all_modules();
+		
 		// load all modules 
 		$this->load_modules($this->mods);
 	}
@@ -140,6 +111,39 @@ final class core
 		{
 			$this->module_handeling ( $module, 'destruct' );
 		}
+	}
+	
+	/**
+	* get all available modules
+	* @return array
+	*/
+	private function get_all_modules ()
+	{
+		// open dir
+		if ( $handle = opendir($this->path . 'main/_modules/') )
+		{
+			//
+			while (false !== ($dir = readdir($handle))) {
+				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $naf)) {
+					$mods[] = $dir;
+				}
+			}
+			closedir($handle);
+		}
+		
+		// save to cache files
+		if ( $this->allow_structure_cache )
+		{
+			// open / make file
+			$file = fopen($this->path . 'main/_modules/mod.cache', "w");
+			
+			// write to file, serialize is slow and cpu heavy process.
+			fputs($file, serialize($mods));
+			
+			// close file
+			fclose($file);
+		}
+		return (!empty($mods)) ? $mods : array();
 	}
 	
 	/**
