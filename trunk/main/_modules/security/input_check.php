@@ -8,8 +8,10 @@
 /**
 * remote execution detector
 */
-function remote_execution($v)
+function remote_execution($v, $core)
 {
+	global $detection_action;
+
 	if ( is_array ($v) )
 	{
 		return array_map('remote_execution', $v);
@@ -19,8 +21,8 @@ function remote_execution($v)
 		preg_match('/:\/\//', $v, $url_found);
 		if ( !empty( $url_found ) )
 		{
-			$this->log('detected url in $_ variabele' . addslashes($url_found['0']) ,'error_log');
-			if ( $detection_action => 1 )
+			$core->log('detected url in $_POST or $_GET variabele\n GET :' . implode(',', $_GET) . "\n POST :" . implode(',', $_POST) .'\n' ,'error_log');
+			if ( $detection_action >= 1 )
 			{
 				die('attempted_hack_detected');
 			}
@@ -33,11 +35,11 @@ function remote_execution($v)
 // get the $_GET variabele
 if ( !empty($_GET) )
 {
-	$_GET = array_map('remote_execution', $_GET);
+	$_GET = array_map('remote_execution', $_GET , array_fill(0 , count($_GET), $core) );
 }
 // get the $_POST variabele
 if ( !empty($_POST) )
 {
-	$_POST = array_map('remote_execution', $_POST);
+	$_POST = array_map('remote_execution', $_POST , array_fill(0 , count($_POST), $core) );
 }
 ?>
