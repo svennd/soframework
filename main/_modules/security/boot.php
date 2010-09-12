@@ -12,7 +12,7 @@ switch ($mode)
 {
 	// start the module
 	case "construct" :
-				
+				$core = $this;
 				// include configuration for module
 				include $module_path . 'config.php';
 				
