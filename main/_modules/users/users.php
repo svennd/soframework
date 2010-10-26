@@ -15,7 +15,10 @@ final class user
 	#	banned = -1, guest = 0, user = 1, moderator = 2, admin = 3, developer = 4
 	
 	public
-		$core,
+		$core
+		;
+	
+	private 
 		$salt = 'blaat123'
 		;
 	
@@ -60,7 +63,7 @@ final class user
 	public function registration ($user, $password, $email, $level = 1, $admin_register = false)
 	{
 		# check user already exist
-		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($user) . '" LIMIT 1', __FILE__, __LINE__ );
+		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($user) . '" LIMIT 1;', __FILE__, __LINE__ );
 		
 		if ( count($this->core->db->result) == 0 )
 		{
@@ -88,6 +91,7 @@ final class user
 				{
 					if ( !$this->core->user->login ($user, $password) )
 					{
+						$core->log ('user plugin : new user could not login : ' . htmlspecialchars( $user ), 'error_log');
 						return false;
 					}
 				}
@@ -146,9 +150,6 @@ final class user
 	{	
 		# alle inhoud verwijderen
 		$this->core->session->reset();
-		
-		# opslaan
-		$this->core->session->end();
 	}
 	
 	/**
@@ -176,18 +177,25 @@ final class user
 	*/
 	public function get_user_id()
 	{
-		return $this->core->session->get('user_id');
+		return (int) $this->core->session->get('user_id');
 	}
 	
 	/**
-	* get username from id
-	* @param int $id
+	* get user name
 	* @return string
-	*/
-	public function id_to_user($id)
+	*/	
+	public function get_user_name()
 	{
-		$this->core->db->sql('SELECT username FROM `user_data` WHERE `id` = "' . $id . '" LIMIT 1;', __FILE__, __LINE__);
-		return ( isset($this->core->db->result) ) ? $this->core->db->result['username'] : "gast" ;		
+		return $this->core->session->get('user_name');
+	}
+	
+	/**
+	* get user level
+	* @return int
+	*/	
+	public function get_user_level()
+	{
+		return (int) $this->core->session->get('user_level');
 	}
 	
 	/**
@@ -199,94 +207,6 @@ final class user
 	private function make_pass_hash ($user, $password)
 	{
 		return hash('sha256', $this->salt . strtolower($user) . $password);
-	}
-	
-	/**
-	* edit user info
-	* @param string $user
-	* @return bool
-	*/
-	public function edit_user_info ( $user_id, $user, $password, $email, $level, $extra_values = array())
-	{
-		if ( isset($password) && !isset($user) )
-		{
-			return false;
-		}
-		
-		if ( !empty ($extra_values) )
-		{
-			$extra_data = '';
-			foreach ($extra_value as $key => $value)
-			{
-				$extra_data .= '`' . $key . '` = "' . $value . '",';
-			}
-		}
-		else
-		{
-			$extra_data = '';
-		}
-		
-		# short notation
-		$db = $this->core->db;
-		
-		# make pass hash
-		$pass_hash = $this->make_pass_hash ( $user, $password );
-		
-		# make query :)
-		$db->sql ('
-								UPDATE 
-									`user_data`
-								SET
-									' . (isset ($user) ? '`username`= "' . $db->esc($user) . '",' : '')  . '
-									' . (isset ($password) ? '`pass_hash`= "' . $db->esc($pass_hash) . '",' : '')  . '
-									' . (isset ($email) ? '`email`= "' . $db->esc($email) . '",' : '')  . '
-									' . (isset ($level) ? '`level` = ' . $level . ',' : '')  . '
-									' . $extra_data .'
-									`edit_date` = NOW()
-								WHERE
-									user_data.id = ' . $user_id . '
-								',
-							__FILE__,
-							__LINE__
-								);
-		return true;
-		
-	}
-	
-	/**
-	* show all users
-	* @return array
-	*/
-	public function show_all_users ( $limit = false )
-	{
-		if ( $limit )
-		{
-			return $this->core->db->sql('
-								SELECT 
-									user_data.id,
-									user_data.username, 
-									user_data.level, 
-									user_data.reg_date, 
-									user_data.last_login_date 
-								FROM 
-									user_data 
-								LIMIT 0, ' . $limit . ';'
-								, __FILE__, __LINE__);
-		}
-		else
-		{
-			return $this->core->db->sql('
-								SELECT 
-									user_data.id, 
-									user_data.username, 
-									user_data.level, 
-									user_data.reg_date, 
-									user_data.last_login_date 
-								FROM 
-									user_data 
-								;'
-								, __FILE__, __LINE__);
-		}
 	}
 }
 

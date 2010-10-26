@@ -43,6 +43,16 @@ final class view
 	}
 	
 	/**
+	* set variables, proper way
+	* @param string $name
+	* @param mixed $value
+	*/
+	public function set($name, $value)
+	{
+		$this->variables[$name] = $value;
+	}
+	
+	/**
 	* use the buffer or instand output
 	* @param bool $bool
 	*/

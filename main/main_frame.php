@@ -260,7 +260,7 @@ final class core
 	function log($msg , $file = 'admin_log')
 	{
 		// try to open or make it, and set pointer to end of file
-		$fp = fopen($this->path . 'main/_logs/' . $file . '.log', 'a+');
+		$fp = fopen($this->path . 'main/_temp/_logs/' . $file . '.log', 'a+');
 		
 		// write to file
 		fwrite($fp, time() . (string) $msg . "\r\n");
