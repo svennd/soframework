@@ -112,14 +112,14 @@ final class user
 		# default geeft sowieso bool terug
 		# als hij gast is
 		if ( $this->core->session->get('user_level') !== FALSE )
-		{
+		{			
 			# paswoord maken
 			$pass_hash = $this->make_pass_hash($user, $password);
 			$this->core->db->sql('SELECT id, username, level FROM `user_data` WHERE `username` = "' . $user . '" AND `pass_hash` = "' . $pass_hash . '" LIMIT 1;', __FILE__, __LINE__);
-
+		
 			# gebruiker ophalen
 			# lazy evaluation (?)
-			if ( isset($this->core->db->resul) && $r = $this->core->db->result )
+			if ( isset($this->core->db->result) && $r = $this->core->db->result )
 			{
 				# user is found, lets set up his data
 				$this->core->session->put(array(
