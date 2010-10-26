@@ -26,12 +26,15 @@ final class core
 	{
 		// reference
 		$core = $this;
-		
+
 		// undo magic_quotes
 		$this->escape_input();
 		
 		// load configuration, for page, and full framework
 		$this->load_config($page_info);
+				
+		// check if no hard stop file has been set
+		$this->check_access();
 		
 		// load core modules
 		$this->core_handeling( 'construct' );
@@ -100,6 +103,20 @@ final class core
 				$this->module_handeling ( $modules, 'construct' );
 			}
 		}
+	}
+
+	/**
+	* check if script can continue
+	*/
+	private function check_access ( )
+	{
+		if (file_exists($this->path . 'main/index.exit'))
+		{
+			$var = file_get_contents($this->path . 'main/index.exit');
+			echo htmlspecialchars($var);
+			exit;
+		}
+		return true;
 	}
 	
 	/**

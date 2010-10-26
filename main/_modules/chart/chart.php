@@ -13,25 +13,55 @@ final class chart
 {
 	private 
 		$path,
+		$img_path,
 		$known_types = array(
 								'line' 		=> 'line', 
+								'balk'		=> 'balk',
 								'circle' 	=> 'circle_chart',
 							)
 		;
 	
-	function __construct ( $core_path )
+	function __construct ( $core, $module_path )
 	{
-		$this->path = $core_path;
+		$this->sCore = $core;
+		$this->path = $core->path;
+		$this->module_path = $module_path;
+		$this->img_path = $module_path . 'img/';
 	}
 	
 	function load( $type )
 	{
 		if ( in_array ( $type, $this->known_types) )
 		{
-			include $this->path . 'structure/' . $this->known_types[$type] . '.php';
+			include $this->module_path . 'structure/' . $this->known_types[$type] . '.php';
 		}
 		$chart = $this;
-		$this->chart = new chart($this);
+		$this->{$type} = new $type($this, $this->img_path);
+	}
+	
+	function reload_all ()
+	{
+		// to lazy to make this really dynamic
+		$allowed_files = array("line_culum_euro.php", "bar_wist_procent.php", "bar_winst_euro.php", "bar_culum_procent.php");
+		
+		// give a secure core
+		$core = $this->sCore;
+		
+		// settings loaded
+		include $this->module_path . 'build_info/setting.php';
+		
+		if ($handle = opendir($this->module_path . 'build_info/'))
+		{
+			while (false !== ($file = readdir($handle)))
+			{
+				if (in_array($file, $allowed_files))
+				{	
+					// run the scripts
+					include $this->module_path . 'build_info/' . $file;
+				}
+			}
+			closedir($handle);
+		}
 	}
 }
 ?>

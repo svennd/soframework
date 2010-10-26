@@ -14,11 +14,12 @@ switch ($mode)
 	case "construct" :
 		
 				// include the class file
-				include $module_path . 'chart.php';
+				include $module_path . 'cms.php';
 				
 				// 'boot' the class
-				$this->chart = new chart($this, $module_path);
+				$this->cms = new cms($this);
 		break;
+
 }
 
 ?>

@@ -11,15 +11,16 @@
 * makes line chart class
 * @abstract
 */
-final class chart {
+final class line {
 
 	# default settings
 	public
 			$tussenstappen = 10, # aantal tussenstappen
 			$data = array(),
-			$hoogte = 300,
+			$hoogte = 400,
 			$breedte = 450,
 			$spin = 90,
+			$draw_zero = 0,
 			$draw_box = true,
 			$rand = array(
 							'left' 		=> 40,
@@ -27,7 +28,13 @@ final class chart {
 							'top' 		=> 15,
 							'bottom' 	=> 40 
 						),
-			$font = 'verdana.ttf',
+			$rand_fixed = -1,
+			$fixed = array(
+							'min' => -1,
+							'max' => -1
+							),
+			$font = 'main/_modules/chart/verdana.ttf',
+			$font_size = 10,
 			$default_color = array(
 									'background' 	=> 'white',
 									'raster'	 	=> 'grey',
@@ -42,9 +49,10 @@ final class chart {
 			;
 		
 	# construction
-	public function __construct ( $chart_core )
+	public function __construct ( $chart_core, $path )
 	{
 		$this->chart_core = $chart_core;
+		$this->path = $path;
 	}
 	
 	# setter function
@@ -57,7 +65,7 @@ final class chart {
 	# the caller
 	# direct output is not really supported (source is not optimalised for this)
 	# additional save methods could be added (jpg, gif, ...)
-	public function save_to_file ( $filename)
+	public function save_to_file ( $filename )
 	{
 		if (!empty( $this->data ) )
 		{
@@ -65,7 +73,7 @@ final class chart {
 			$this->create_image();
 			
 			# save to a file
-			imagepng($this->img, 'frame/_cache/'. $filename . '.png' );
+			imagepng($this->img, $this->path . $filename . '.png' );
 			
 			# remove file from server
 			imagedestroy($this->img);
@@ -119,7 +127,7 @@ final class chart {
 		
 		# scaling
 		# automatic scaling
-		if ( !isset($this->fixed['min']) && !isset($this->fixed['max']) )
+		if ( $this->fixed['min'] == -1 && $this->fixed['max'] == -1 )
 		{
 			# draw lines y_stap steps
 			$y_stap = ceil( (max($this->data) - $min_data)/ $this->tussenstappen);
@@ -130,8 +138,16 @@ final class chart {
 		# manual scaling
 		else
 		{
-			# homuch steps between max/min
-			$y_stap = ceil( ($this->fixed['max'] - $this->fixed['min'])/ $this->tussenstappen);
+			if ($this->fixed['max'] == -1)
+			{
+				# homuch steps between max/min
+				$y_stap = ceil( (max($this->data) - $this->fixed['min'])/ $this->tussenstappen);
+			}
+			else
+			{
+				# homuch steps between max/min
+				$y_stap = ceil( ($this->fixed['max'] - $this->fixed['min'])/ $this->tussenstappen);
+			}
 			
 			# 
 			$y_max =  $this->fixed['min'] + $this->tussenstappen * $y_stap;
@@ -155,19 +171,22 @@ final class chart {
 					);
 		 
 			# get some data from font & text
-			$tekst_grootte = imagettfbbox(10, 0, $this->font, $waarde);
+			$tekst_grootte = imagettfbbox($this->font_size, 0, $this->font, $waarde);
 			
-			# write the value's at Y as
-			imagettftext(
-							$this->img, 
-							10, 
-							0, 
-							($this->rand['left']- ($tekst_grootte['4'] + $tekst_grootte['0']) -8), 
-							($y + ((0 - $tekst_grootte['5']) / 2)), 
-							$this->{$this->default_color['text']}, 
-							$this->font, 
-							round($waarde, 1)
-						);
+			if ($this->draw_zero || round($waarde, 1) != 0)
+			{
+				# write the value's at Y as
+				imagettftext(
+								$this->img, 
+								$this->font_size, 
+								0, 
+								($this->rand['left']- ($tekst_grootte['4'] + $tekst_grootte['0']) -8), 
+								($y + ((0 - $tekst_grootte['5']) / 2)), 
+								$this->{$this->default_color['text']}, 
+								$this->font, 
+								round($waarde, 1)
+							);
+			}
 
 		}
 
@@ -178,8 +197,15 @@ final class chart {
 		 
 		foreach ($this->data AS $punt => $waarde)
 		{
-
-			$x = $this->rand['left'] + $grafiek_breedte * $punt_nummer/(count($this->data) - 1);
+			if ($this->data != 1 )
+			{
+				$x = $this->rand['left'] + $grafiek_breedte * $punt_nummer / (count($this->data) - 1);
+			}
+			else
+			{
+				$x = $this->rand['left'] + $grafiek_breedte * $punt_nummer;
+			}
+			
 			$y = $this->rand['top'] + $grafiek_hoogte * ( 1 - ($waarde-$min_data) / ($y_max - $min_data) );
 		 
 			# make line connections
@@ -187,14 +213,17 @@ final class chart {
 				imageline($this->img, $x, $y, $previous_x, $previous_y, $this->{$this->default_color['grafiek']});
 		 
 			# label
-			$tekst_grootte = imagettfbbox(10, 90, $this->font, $punt);
+			$tekst_grootte = imagettfbbox($this->font_size, $this->spin, $this->font, $punt);
+			
+			# starting draw point of X string
+			$rand_hoogte = ( $this->rand_fixed == -1 ) ? ($this->hoogte - $this->rand['bottom'] + ($tekst_grootte['1']-$tekst_grootte['3']) + 3) : ( $this->hoogte - $this->rand['bottom'] + $this->rand_fixed);
 			
 			imagettftext(
 							$this->img, 
 							10, 
 							$this->spin, 
-							$x - ($tekst_grootte['4']+$tekst_grootte['0']) / 2,
-							$this->hoogte - $this->rand['bottom'] + ($tekst_grootte['1']-$tekst_grootte['3']) + 3,
+							$x - ($tekst_grootte['4'] + $tekst_grootte['0']) / 2,
+							$rand_hoogte,
 							$this->{$this->default_color['text']}, 
 							$this->font, 
 							$punt

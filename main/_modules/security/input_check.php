@@ -32,14 +32,17 @@ function remote_execution($v, $core)
 }
 
 
+// If the array argument contains string keys then the returned array will contain string keys if and only if exactly one array is passed. 
+// If more than one argument is passed then the returned array always has integer keys. 
+
 // get the $_GET variabele
 if ( !empty($_GET) )
 {
-	$_GET = array_map('remote_execution', $_GET , array_fill(0 , count($_GET), $core) );
+	// $_GET = array_map('remote_execution', $_GET , array_fill(0 , count($_GET), $core) );
 }
 // get the $_POST variabele
 if ( !empty($_POST) )
 {
-	$_POST = array_map('remote_execution', $_POST , array_fill(0 , count($_POST), $core) );
+	// $_POST = array_map('remote_execution', $_POST , array_fill(0 , count($_POST), $core) );
 }
 ?>

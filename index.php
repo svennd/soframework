@@ -2,30 +2,58 @@
 #   Svenn D'Hert
 include('main/main_frame.php');
 
-# initialisation w/o extra value's
+// known pages
+// page -> title
+$known_pages = array(
+						'contact' 		=> 'Neem contact met ons op!', 
+						'forex'			=> 'Forex info pagina', 
+						'resultaten'	=> 'Onze geboekte resultaten!',  
+						'vermogen'		=> 'Vermogensadvies',  
+						'werkwijze'		=> 'Onze methode en werkwijze',  
+						'forexprof'		=> 'Forex Professionals',  
+						'index'			=> 'Fortunes - Rendement is onze passie!',
+						'beheer'		=> 'beheer',
+						'disclaimer'	=> 'disclaimer'
+						);
+
+
 $core = new core();
 
-// $core->auto_load_on();
+// what page is requested
+$url = ( isset($_GET['url']) ) ? htmlspecialchars($_GET['url']) : '';
+	
+	// split the url
+	$url = explode('/', $url);
 
-# information needed for header.tpl (this can be done in an optional module "header.php", an editted by givin $page_info in initialiser)
+	// get controller
+	$contr 	= (!empty($url['0'])) ? $url['0'] : 'index' ;
+
+	// get action
+	$action = (isset($url['1'])) ? htmlspecialchars($url['1']) : '' ;
+	
+	// get query
+	$query 	= (isset($url['2'])) ? htmlspecialchars($url['2']) : '' ;
+
+	// main page check
+	if ( !in_array( $contr , array_keys($known_pages) ) )
+	{
+		// echo 'error' . $contr;
+		// error handeling
+		$core->log('Unknown url requested. (' . htmlspecialchars($_GET['url']) . ')' ,'error_log');
+		$core->close();
+	}
+	
+$core->view->page = $contr;
 $core->view->header = array(
-								'title' 				=> 'voorbeeld bestand'
+								'title' 				=> $known_pages[$contr]
 							);
 
 # output for the header
 $core->view->use_page('header');
 
-# return the index.tpl w/o using the view system to replace stuff
-# ofc here should happen way more like getting query's doing math ect.
-$core->view->use_page('index');
+// include controller
+include './public/'. $contr . '.php';
 
-# and returning the foot of view file,
-# again this can be done in "config" of the view module, tho to remain OOP I removed this
-# or optional you can user a module "footer.php" to let this be done in the close(); function
 $core->view->use_page('footer');
-
-# end of file, this will ouput framework view, kill sessions, finish db connection
-# tho, this could done auto. when using _destructor (maybe going to be implemented in further versions)
 $core->close();
-
 ?>

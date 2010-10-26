@@ -95,9 +95,9 @@ class mysql
 				# clean up the request
 				mysql_free_result( $result );
 				
-				if (preg_match('/LIMIT\s?0?\s?,?\s?1\s?;/i', $query))
+				if ( preg_match('/LIMIT\s?0?\s?,?\s?1\s?;/i', $query) )
 				{
-					$this->result = $this->result['0'];
+					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
 				}
 
 				# return
@@ -114,9 +114,14 @@ class mysql
 				else
 				{
 					# aantal aangepaste rijen, indien 0 failed.
-					return $this->result =  mysql_affected_rows();
+					return $this->result = mysql_affected_rows();
 				}
 			}
+		}
+		else
+		{
+			// result not valid
+			$this->result = false;
 		}
 	}
 	

@@ -36,7 +36,7 @@ final class session
 		$userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown';
 		
 		# unique for every user
-		$this->hash = sha1($userIP . $userAgent . $_SERVER['SERVER_ADDR']);
+		$this->hash = sha1($userIP . $userAgent . $_SERVER['SERVER_NAME']);
 		
 		# delete old sessions
 		$core->db->sql('
@@ -47,22 +47,18 @@ final class session
 		;',__FILE__, __LINE__);
 		
 		# fetch cookie
-		if ( isset($core->COOKIE_raw['core_session']) )
-		{
-			# cast
-			$this->id = ( int ) $core->COOKIE_raw['core_session'];
-		}
-		
+		$this->id = !empty($_COOKIE['core_session']) ? ( int ) $_COOKIE['core_session'] : false;
+
 		# cookie is set ?
 		if ( $this->id )
 		{
 			# get info from table
-			$core->db->sql('SELECT `contents` FROM `user_sessions` WHERE `id` = ' . $this->id . ' AND	`hash` = "' . $this->hash . '" LIMIT 1;', __FILE__, __LINE__);
+			$core->db->sql('SELECT `contents` FROM `user_sessions` WHERE `id` = ' . $this->id . ' AND `hash` = "' . $this->hash . '" LIMIT 1;', __FILE__, __LINE__);
 
-			if ( $r = $core->db->result_output )
+			if ( $r = $core->db->result )
 			{
 				# extract saved data from table
-				$this->contents = unserialize($r[0]['contents']);
+				$this->contents = unserialize($r['contents']);
 				
 				if ( !is_array($this->contents) ) 
 				{
@@ -152,8 +148,14 @@ final class session
 		# fix, this seems to bug a few things
 		if ( !headers_sent() )
 		{
+
 			$absPath = str_replace('//', '/', preg_replace('/([^\/]+\/){' . ( substr_count(( $this->core->path == './' ? '' : $this->core->path ), '/') ) . '}$/', '', dirname(str_replace('\\', '/', $_SERVER['PHP_SELF'])) . '/'));
-			setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
+                  		setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
+
+		}
+		else
+		{
+			echo "header send";
 		}
 	}
 }

@@ -1,0 +1,1 @@
+<h2><?php echo $action['title']; ?></h2><a href="/beheer/">Beheer</a> &rsaquo; <?php echo $action['status']; ?><br/><br/><table><tr>	<td><?php echo $action['text']; ?></td></tr></table>
