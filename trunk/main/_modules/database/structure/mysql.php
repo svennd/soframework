@@ -9,8 +9,7 @@
 * view class
 * @abstract
 */
-
-class mysql
+final class mysql
 {
 	public 
 		$core,
@@ -31,21 +30,21 @@ class mysql
 										))
 		{
 			// no connection
-			$this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
+			$this->core->log('DB error : cannot connect, ' . mysql_errno() . mysql_error(), 'error_log');
 		}	
 	}
 	
 	private function connect($host, $user, $password, $db )
 	{
 		// mysql connection
-		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
+		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$this->db_link)
 		{
 			return false;
 		}
 		
 		// database selection
-		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
+		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$db_selected)
 		{
 			return false;
@@ -57,19 +56,14 @@ class mysql
 	# escape function
 	public function esc ($v)
 	{
-		if ( is_array($v) )
-		{
-			# recursie ^_^
-			return array_map(array($this, 'esc'), $v);
-		}
-		# no array
-		return mysql_real_escape_string($v);
+		# recursive escaping
+		return (is_array($v)) ? array_map(array($this, 'esc'), $v) : mysql_real_escape_string($v);
 	}
 	
 	public function sql ($query, $file, $lijn)
 	{		
 		# send the query
-		$result = mysql_query($query) or $this->core->log('DB error : ' . mysql_errno() . mysql_error() . __FILE__ . __LINE__, 'error_log');
+		$result = mysql_query($query) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 				
 		# dit verwijderd spaties & enters
 		# vb : sql(' SELECT ...
@@ -95,7 +89,7 @@ class mysql
 				# clean up the request
 				mysql_free_result( $result );
 				
-				if ( preg_match('/LIMIT\s?0?\s?,?\s?1\s?;/i', $query) )
+				if ( preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
 				{
 					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
 				}
@@ -122,6 +116,9 @@ class mysql
 		{
 			// result not valid
 			$this->result = false;
+			
+			# save it for the developer :)
+			$this->core->log('DB error : no valid result, ' . htmlspecialchars($query), 'error_log');
 		}
 	}
 	

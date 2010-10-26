@@ -14,7 +14,7 @@ final class session
 	public
 			$core,
 			$id,
-			$lifeTime = 3600, # 1 houre
+			$lifeTime = 86400, # 1 houre
 			$contents = array()
 			;
 			
@@ -145,17 +145,14 @@ final class session
 		$this->core->db->sql('UPDATE `user_sessions` SET `contents` = "' . $this->core->db->esc(serialize($this->contents)) . '", `date_expire` = DATE_ADD(NOW(), INTERVAL ' . ( int ) $this->lifeTime . ' SECOND) WHERE `id` = ' . $this->id . ' LIMIT 1 ;',__FILE__, __LINE__);
 
 		# set cookie
-		# fix, this seems to bug a few things
 		if ( !headers_sent() )
 		{
-
 			$absPath = str_replace('//', '/', preg_replace('/([^\/]+\/){' . ( substr_count(( $this->core->path == './' ? '' : $this->core->path ), '/') ) . '}$/', '', dirname(str_replace('\\', '/', $_SERVER['PHP_SELF'])) . '/'));
-                  		setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
-
+            setcookie('core_session', $this->id, time() + $this->lifeTime, $absPath);
 		}
 		else
 		{
-			echo "header send";
+			$core->log('session plugin : header already send, could not make cookie.', 'error_log');
 		}
 	}
 }
