@@ -1,13 +1,6 @@
 <?php
-// settings loaded on reset gfx
-
-
-// some math setting
-$start_bedrag = 220000;
-$cumul_procent = 100;
-
-// static
-$maand = array("Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Dec");
+// these settings will be loaded before the other *.php files in this folder
+// thus anything could be saved here in order to make it global available
 
 // loading charts
 $core->chart->load('line');

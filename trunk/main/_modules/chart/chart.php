@@ -16,8 +16,7 @@ final class chart
 		$img_path,
 		$known_types = array(
 								'line' 		=> 'line', 
-								'balk'		=> 'balk',
-								'circle' 	=> 'circle_chart',
+								'balk'		=> 'balk'
 							)
 		;
 	
@@ -42,7 +41,7 @@ final class chart
 	function reload_all ()
 	{
 		// to lazy to make this really dynamic
-		$allowed_files = array("line_culum_euro.php", "bar_wist_procent.php", "bar_winst_euro.php", "bar_culum_procent.php");
+		$allowed_files = array("bar_example", "line_example");
 		
 		// give a secure core
 		$core = $this->sCore;
