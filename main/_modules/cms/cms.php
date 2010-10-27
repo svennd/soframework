@@ -7,7 +7,7 @@ final class cms
 		;
 		
 	private 
-		$edit_able = array('example')
+		$edit_able = array('cms_example')
 		;
 		
 	function __construct( $core )
