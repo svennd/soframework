@@ -7,7 +7,7 @@ final class cms
 		;
 		
 	private 
-		$edit_able = array('vermogen', 'werkwijze', 'resultaten', 'mail_send_page', 'index', 'forexprof', 'forex', 'contact_form', 'disclaimer')
+		$edit_able = array('example')
 		;
 		
 	function __construct( $core )
@@ -97,7 +97,7 @@ final class cms
 		if(in_array($file, $this->edit_able))
 		{
 			# open for writing
-			$file = (file_exists($this->core->path . "main/_view/" . $file . ".tpl")) ? fopen ($this->core->path . "main/_view/_bck/" . $file . "." . time() . ".bck", "wb+") : false;
+			$file = (file_exists($this->core->path . "main/_view/" . $file . ".tpl")) ? fopen ($this->core->path . "main/_temp/_bck/" . $file . "." . time() . ".bck", "wb+") : false;
 			# store
 			fwrite($file , $content);
 			# close
