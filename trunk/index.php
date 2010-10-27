@@ -5,15 +5,7 @@ include('main/main_frame.php');
 // known pages
 // page -> title
 $known_pages = array(
-						'contact' 		=> 'Neem contact met ons op!', 
-						'forex'			=> 'Forex info pagina', 
-						'resultaten'	=> 'Onze geboekte resultaten!',  
-						'vermogen'		=> 'Vermogensadvies',  
-						'werkwijze'		=> 'Onze methode en werkwijze',  
-						'forexprof'		=> 'Forex Professionals',  
-						'index'			=> 'Fortunes - Rendement is onze passie!',
-						'beheer'		=> 'beheer',
-						'disclaimer'	=> 'disclaimer'
+						'index' 		=> 'This is the index page.'
 						);
 
 

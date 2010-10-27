@@ -1,9 +1,8 @@
 <?php
-$core->load_modules('cache');
+# load 'page' menu
 $core->view->use_page('menu');
+
+# load index page
 $core->view->use_page('index');
 
-$core->cache->save('test', "inhoud van speciaal save :)");
-echo $core->cache->get('test');
-echo $core->cache->clean();
 ?>
