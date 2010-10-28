@@ -212,11 +212,16 @@ final class core
 			# php 5 want all objects declared
 			$this->_page = new stdClass();
 			
+			# already took this one
+			if (isset($page_info['PATH']))
+			{
+				unset($page_info['PATH']);
+			}
+			
+			# put all info in the new class _page
 			foreach ( $page_info as $k => $v )
 			{
-				# already got that one
-				if ( $k != 'PATH' )
-					$this->_page->{$k} = $v;
+				$this->_page->{$k} = $v;
 			}
 		}
 		
