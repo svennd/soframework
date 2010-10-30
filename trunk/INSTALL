@@ -1,0 +1,68 @@
+#########################################
+#			#	INSTALL		#
+#
+#	1) download latest version (check)
+#	2) upload to server (php 5)
+#	3) use the sql code below to 'install' all modules
+#	4) you are ready to rumble!
+#
+# Thx for downloading our software
+#########################################
+
+CREATE TABLE IF NOT EXISTS `chart_data` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `month` tinyint(2) NOT NULL,
+  `year` smallint(4) NOT NULL,
+  `value` float NOT NULL,
+  `graph` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `date` (`month`,`year`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+CREATE TABLE IF NOT EXISTS `chart_options` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `chart` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+CREATE TABLE IF NOT EXISTS `sys_modules` (
+  `id` int(10) NOT NULL DEFAULT '0',
+  `name` varchar(255) DEFAULT NULL,
+  `level` int(10) DEFAULT NULL,
+  `version` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `sys_var` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` text,
+  `value` varchar(255) DEFAULT NULL,
+  `last_edit` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+CREATE TABLE IF NOT EXISTS `user_data` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) DEFAULT NULL,
+  `pass_hash` varchar(255) DEFAULT NULL,
+  `level` tinyint(1) DEFAULT NULL,
+  `email` varchar(40) DEFAULT NULL,
+  `reg_date` datetime DEFAULT NULL,
+  `edit_date` datetime DEFAULT NULL,
+  `last_login_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+CREATE TABLE IF NOT EXISTS `user_sessions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `hash` varchar(40) NOT NULL DEFAULT '',
+  `contents` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_expire` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hash` (`hash`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
