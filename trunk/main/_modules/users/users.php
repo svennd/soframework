@@ -6,7 +6,7 @@
 */
 
 /**
-* view class
+* user class
 * @abstract
 */
 final class user

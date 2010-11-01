@@ -4,7 +4,7 @@
 $core->view->use_page('menu');
 
 // get something from db
-$fetch = $core->db->sql ("SELECT * FROM users;", __FILE__, __LINE__);
+$fetch = $core->db->sql ("SELECT * FROM user_data;", __FILE__, __LINE__);
 
 // send to view
 $core->view->fetch = $fetch;

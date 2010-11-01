@@ -6,7 +6,7 @@
 */
 
 /**
-* view class
+* mysql class
 * @abstract
 */
 final class mysql
@@ -16,6 +16,14 @@ final class mysql
 		$db_ready = false
 		;
 	
+	/**
+	* initialize
+	* @param object $core
+	* @param string $db_host database host
+	* @param string $db_u_name user name
+	* @param string $db_u_pass user password
+	* @param string $db_name database name
+	*/
 	function __construct($core, $db_host, $db_u_name, $db_u_pass, $db_name)
 	{
 		// reference to the core object
@@ -34,6 +42,13 @@ final class mysql
 		}	
 	}
 	
+	/**
+	* connect to the database
+	* @param string $host database host
+	* @param string $user user name
+	* @param string $password user password
+	* @param string $db database name
+	*/
 	private function connect($host, $user, $password, $db )
 	{
 		// mysql connection
@@ -53,17 +68,26 @@ final class mysql
 		return true;
 	}
 	
-	# escape function
+	/**
+	* escape vars
+	* @param mixed
+	*/
 	public function esc ($v)
 	{
 		# recursive escaping
 		return (is_array($v)) ? array_map(array($this, 'esc'), $v) : mysql_real_escape_string($v);
 	}
 	
+	/**
+	* do the query
+	* @param string $query SQL
+	* @param string $file file of request
+	* @lijn int $lijn
+	*/	
 	public function sql ($query, $file, $lijn)
 	{		
 		# send the query
-		$result = mysql_query($query) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
+		$result = mysql_query($query) or $this->core->log('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error(), 'error_log');
 				
 		# dit verwijderd spaties & enters
 		# vb : sql(' SELECT ...
@@ -118,10 +142,13 @@ final class mysql
 			$this->result = false;
 			
 			# save it for the developer :)
-			$this->core->log('DB error : no valid result, ' . htmlspecialchars($query), 'error_log');
+			$this->core->log('DB error : (' . $lijn . ', ' . $file . '), no valid result, ' . htmlspecialchars($query), 'error_log');
 		}
 	}
 	
+	/**
+	* close connection when active
+	*/	
 	public function close_connection ()
 	{
 		// close connection if made.

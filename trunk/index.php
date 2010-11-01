@@ -5,7 +5,9 @@ include('main/main_frame.php');
 // known pages
 // page -> title
 $known_pages = array(
-						'index' 		=> 'This is the index page.'
+						'index' 				=> 'This is the index page.',
+						'db_example' 			=> 'database example.',
+						'biophp_example' 		=> 'biophp example'
 						);
 
 
