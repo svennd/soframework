@@ -15,7 +15,8 @@ final class core
 		$path,
 		$auto_load 				= false,
 		$allow_structure_cache 	= true,
-		$mods 					= array()
+		$mods 					= array(),
+		$naf 					= array('.svn', '.', '..')
 		;
 
 	/**
@@ -45,7 +46,6 @@ final class core
 	*/	
 	public function auto_load_on ()
 	{
-		$naf = array('.svn', '.', '..');
 		$this->auto_load = true;
 		
 		// use cache file, if there is one
@@ -141,7 +141,7 @@ final class core
 		{
 			//
 			while (false !== ($dir = readdir($handle))) {
-				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $naf)) {
+				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $this->naf)) {
 					$mods[] = $dir;
 				}
 			}

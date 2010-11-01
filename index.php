@@ -7,7 +7,8 @@ include('main/main_frame.php');
 $known_pages = array(
 						'index' 				=> 'This is the index page.',
 						'db_example' 			=> 'database example.',
-						'biophp_example' 		=> 'biophp example'
+						'biophp_example' 		=> 'biophp example',
+						'update'				=> 'update'
 						);
 
 
@@ -43,7 +44,7 @@ $core->view->header = array(
 							);
 
 # output for the header
-$core->view->use_page('header');
+// $core->view->use_page('header');
 
 // include controller
 include './public/'. $contr . '.php';
