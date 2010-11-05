@@ -26,16 +26,9 @@ final class biophp
 		// reference to the core object
 		$this->core = $core;
 		$this->module_path = $module_path;
-	}
-	
-	/**
-	* support call
-	* @return array
-	*/
-	public function help ()
-	{
-		$arr = get_defined_functions();
-		print_r($arr);
+		
+		include $module_path . 'inc/fasta.php';
+		$this->fasta = new fasta($core, $module_path);
 	}
 	
 	/**
@@ -53,8 +46,12 @@ final class biophp
 	* @param string
 	* @return array
 	*/
-	public function mrna_to_triplet ( $mrna )
+	public function mrna_to_triplet ( $mrna, $offset = 0 )
 	{
+		if ( $offset == 0 )
+		{
+			$mrna = substr( $mrna, $offset);
+		}
 		$rna_length = strlen($mrna);
 		
 		// loop triplets
@@ -74,7 +71,7 @@ final class biophp
 	public function triplet_to_peptide ( $triplet )
 	{
 		# include the codon_base library
-		require $this->module_path . 'condon_base.inc';
+		require $this->module_path . 'inc/condon_base.inc';
 		if ( strlen($triplet) == 3 )
 		{
 			return $codon_to_peptide[$triplet];
