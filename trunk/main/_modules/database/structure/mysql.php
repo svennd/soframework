@@ -55,6 +55,7 @@ final class mysql
 		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$this->db_link)
 		{
+			$this->return = false;
 			return false;
 		}
 		
@@ -62,6 +63,7 @@ final class mysql
 		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$db_selected)
 		{
+			$this->return = false;
 			return false;
 		}
 		
@@ -101,11 +103,17 @@ final class mysql
 			# select, show en explain geven "array" resource terug
 			if ( preg_match('/^(SELECT|SHOW|EXPLAIN)/i', $query) )
 			{
+				# linux (correctly) sets 0 results as result, however we like to get a fail on the query then ;)
+				if ( mysql_num_rows( $result == 0 )
+				{
+					return $this->result = false;
+				}
+				
 				# fix ; in het geval deze al gezet is tijdens deze pagina.
 				$this->result = array();
 				
 				# lees de resultaten uit
-				while ( $d = mysql_fetch_array($result) )
+				while ( $d = mysql_fetch_array($result, MYSQL_ASSOC) )
 				{
 					$this->result[] = $d;
 				}
@@ -118,7 +126,6 @@ final class mysql
 					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
 				}
 
-				# return
 				return $this->result;
 			}
 			# delete, insert, (...) geven een bool terug
