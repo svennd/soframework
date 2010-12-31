@@ -56,15 +56,13 @@ final class mysql
 		if (!$this->db_link)
 		{
 			$this->return = false;
-			return false;
 		}
 		
 		// database selection
 		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$db_selected)
 		{
-			$this->return = false;
-			return false;
+			return $this->return = false;
 		}
 		
 		return true;
