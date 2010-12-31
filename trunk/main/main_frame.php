@@ -13,8 +13,7 @@ final class core
 {
 	public
 		$path,
-		$auto_load 				= false,
-		$allow_structure_cache 	= true,
+		$known_modules			= array(),
 		$mods 					= array(),
 		$naf 					= array('.svn', '.', '..')
 		;
@@ -33,82 +32,76 @@ final class core
 		
 		// load configuration, for page, and full framework
 		$this->load_config($page_info);
-				
+		
 		// check if no hard stop file has been set
 		$this->check_access();
 		
-		// load core modules
-		$this->core_handeling( 'construct' );
+		// save all known modules
+		$this->known_modules = $this->get_all_modules();
 	}
 	
+	// public loaded
+	
 	/**
-	* when auto_load is set to true, all available modules will be loaded
-	*/	
-	public function auto_load_on ()
+	* load modules
+	* @param mixed $modules
+	*/
+	public function load_modules ( $modules )
 	{
-		$this->auto_load = true;
-		
-		// use cache file, if there is one
-		$this->mods = (file_exists($this->path . 'main/_modules/mod.cache')) ? unserialize(file_get_contents($this->path . 'main/_modules/mod.cache')) : $this->get_all_modules();
-		
-		// load all modules 
-		$this->load_modules($this->mods);
+		# more then one module load_modules( array('module1', 'module2') );
+		if ( is_array($modules) )
+		{
+			foreach ( $modules as $module )
+			{
+				if ( in_array($module, $this->known_modules) )
+				{
+					$this->mods[] = $module;
+					$this->module_handeling ( $module, 'construct' );
+				}
+				else
+				{
+					$this->log('unknown module requested : '. $module, 'error_log');
+				}
+			}
+		}
+		# only 1 module string like given load_modules('module1');
+		else
+		{
+			if ( in_array($module, $this->known_modules))
+			{
+				$this->mods[] = $modules;
+				$this->module_handeling ( $modules, 'construct' );
+			}
+			else
+			{
+				$this->log('unknown module requested : '. $module, 'error_log');
+			}
+		}
 	}
 	
 	/**
 	* pseudo destructor
+	* this cause the 'reall' php destructor has problems using global scope
 	*/
 	public function close ()
 	{
 		# referentie
 		$core = $this;
 		
-		# destroying user defined modules
-		$this->destroy_modules();
+		# unload all modules who are loaded
+		foreach ( $this->mods as $module )
+		{
+			$this->module_handeling ( $module, 'destruct' );
+		}
 		
-		# destroying core handeling modules
-		$this->core_handeling( 'destruct' );
 	}
 	
-	/**
-	* load modules from script level
-	* @param mixed $modules
-	*/
-	public function load_modules ( $modules )
-	{
-		// auto load has been set
-		if ( $this->auto_load )
-		{
-			foreach ( $this->mods as $module )
-			{
-				$this->module_handeling ( $module, 'construct' );
-			}
-		}
-		// not all modules have to be loaded
-		else
-		{
-			# more then one module load_modules( array('module1', 'module2') );
-			if ( is_array($modules) )
-			{
-				foreach ( $modules as $module )
-				{
-					$this->mods[] = $module;
-					$this->module_handeling ( $module, 'construct' );
-				}
-			}
-			# only 1 module string like given load_modules('module1');
-			else
-			{
-				$this->mods[] = $modules;
-				$this->module_handeling ( $modules, 'construct' );
-			}
-		}
-	}
+	// internal loaded	
 
 	/**
 	* check if script can continue
 	*/
-	private function check_access ( )
+	private function check_access ()
 	{
 		if (file_exists($this->path . 'main/index.exit'))
 		{
@@ -120,17 +113,6 @@ final class core
 	}
 	
 	/**
-	* unload modules from script level
-	*/
-	private function destroy_modules ( )
-	{
-		foreach ( $this->mods as $module )
-		{
-			$this->module_handeling ( $module, 'destruct' );
-		}
-	}
-	
-	/**
 	* get all available modules
 	* @return array
 	*/
@@ -139,7 +121,6 @@ final class core
 		// open dir
 		if ( $handle = opendir($this->path . 'main/_modules/') )
 		{
-			//
 			while (false !== ($dir = readdir($handle))) {
 				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $this->naf)) {
 					$mods[] = $dir;
@@ -147,19 +128,7 @@ final class core
 			}
 			closedir($handle);
 		}
-		
-		// save to cache files
-		if ( $this->allow_structure_cache )
-		{
-			// open / make file
-			$file = fopen($this->path . 'main/_modules/mod.cache', "w");
-			
-			// write to file, serialize is slow and cpu heavy process.
-			fputs($file, serialize($mods));
-			
-			// close file
-			fclose($file);
-		}
+
 		return (!empty($mods)) ? $mods : array();
 	}
 	
@@ -176,47 +145,23 @@ final class core
 			$module_path = $this->path . 'main/_modules/' . $module . '/';
 			include($this->path . 'main/_modules/' . $module . '/boot.php');
 		}
-	}
-	
-	/**
-	* load modules who are considerd 'important'
-	* @param string $file
-	* @param string $mode
-	*/
-	private function core_handeling( $mode )
-	{
-		# core modules should be set in _config.php
-		if ( is_array($this->_core_modules[$mode]) )
+		else
 		{
-			# the reference
-			$core = $this;
-			foreach ($this->_core_modules[$mode] as $module)
-			{
-				$module_path = $this->path . 'main/_modules/' . $module . '/';
-				include($this->path . 'main/_modules/' . $module . '/boot.php');
-			}
+			$this->log('unknown module loaded : ' .(string) $module , 'error_log');
 		}
 	}
-	
+		
 	/**
 	* load config
 	* @param array $page_info
 	*/
 	private function load_config ($page_info) 
 	{
-		# only var we really need
-		$this->path = (isset ($page_info['PATH'])) ? $page_info['PATH'] : "./";
-
+		# save page info
 		if ( is_array($page_info) && !empty($page_info) )
 		{
 			# php 5 want all objects declared
 			$this->_page = new stdClass();
-			
-			# already took this one
-			if (isset($page_info['PATH']))
-			{
-				unset($page_info['PATH']);
-			}
 			
 			# put all info in the new class _page
 			foreach ( $page_info as $k => $v )
@@ -225,11 +170,11 @@ final class core
 			}
 		}
 		
-		# add it
+		# add global config file
 		include($this->path . 'main/_config.php');
 			
 		# main config array
-		if ( isset($config) )
+		if ( isset($config) && is_array($config) )
 		{
 			# put in as vars in frame
 			foreach ( $config as $k => $v )
@@ -264,14 +209,33 @@ final class core
 	*/
 	function log($msg , $file = 'admin_log')
 	{
-		// try to open or make it, and set pointer to end of file
-		$fp = fopen($this->path . 'main/_temp/_logs/' . $file . '.log', 'a+');
+		$log_file = $this->path . 'main/_temp/_logs/' . $file . '.log';
 		
-		// write to file
-		fwrite($fp, time() . (string) $msg . "\r\n");
-		
-		// close file
-		fclose($fp);
+		if ( is_writable($log_file) )
+		{
+			// try to open or make it, and set pointer to end of file
+			$fp = fopen($log_file, 'a+');
+			
+			// write to file
+			fwrite($fp, time() . (string) $msg . "\r\n");
+			
+			// close file
+			fclose($fp);
+		}
+		# we got errors we cannot save so check what configs says
+		# if no config is set, we go for a die();
+		else
+		{
+			# config found & true so hide modus.
+			if ( isset($config['production'] && $config['production'] )
+			{
+				return true;
+			}
+			else
+			{
+				return die('Could write to log file. The error loading to this issue was : <br/>' . $msg . '<br/>requested file : ' . $file);
+			}
+		}
 	}
 }
 
