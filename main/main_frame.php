@@ -227,7 +227,7 @@ final class core
 		else
 		{
 			# config found & true so hide modus.
-			if ( isset($config['production'] && $config['production'] )
+			if ( isset($config['production']) && $config['production'] )
 			{
 				return true;
 			}

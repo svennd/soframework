@@ -55,7 +55,7 @@ final class mysql
 		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$this->db_link)
 		{
-			$this->return = false;
+			return $this->return = false;
 		}
 		
 		// database selection
