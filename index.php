@@ -15,7 +15,7 @@ $core = new core();
 
 // what page is requested
 $url = ( isset($_GET['url']) ) ? htmlspecialchars($_GET['url']) : '';
-	echo $url;
+
 	// split the url
 	$url = explode('/', $url);
 
