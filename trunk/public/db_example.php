@@ -1,4 +1,6 @@
 <?php
+// load modules
+$core->load_modules (array('view', 'database'));
 
 // load menu page
 $core->view->use_page('menu');

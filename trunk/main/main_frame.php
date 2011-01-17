@@ -218,6 +218,12 @@ final class core
 	*/
 	function log($msg , $file = 'admin_log')
 	{
+		echo $msg . '<br/>';
+		if ( isset($config['production']) && !$config['production'] )
+		{
+			echo $msg . '<br/>';
+		}
+		
 		$log_file = $this->path . 'main/_temp/_logs/' . $file . '.log';
 			
 		if ( is_writable($log_file) )

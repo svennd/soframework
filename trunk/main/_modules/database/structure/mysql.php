@@ -84,7 +84,7 @@ final class mysql
 	* @param string $file file of request
 	* @lijn int $lijn
 	*/	
-	public function sql ($query, $file, $lijn)
+	public function sql ($query, $file = 'unkown', $lijn = 'unknown')
 	{		
 		# send the query
 		$result = mysql_query($query) or $this->core->log('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error(), 'error_log');
@@ -102,7 +102,7 @@ final class mysql
 			if ( preg_match('/^(SELECT|SHOW|EXPLAIN)/i', $query) )
 			{
 				# linux (correctly) sets 0 results as result, however we like to get a fail on the query then ;)
-				if ( mysql_num_rows( $result == 0 )
+				if ( mysql_num_rows( $result ) == 0 )
 				{
 					return $this->result = false;
 				}
