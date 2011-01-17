@@ -171,8 +171,17 @@ final class core
 		}
 		
 		# add global config file
-		include($this->path . 'main/_config.php');
-			
+		if ( is_file($this->path . 'main/_config.php') )
+		{
+			include($this->path . 'main/_config.php');
+		}
+		else
+		{
+			# clearly something is not right
+			$this->log("Could not load main config file, maybe main/_config.default.php not renamed ?" , 'boot_log');
+			die('Main config file could not be located. Please check logs for more info.');
+		}
+		
 		# main config array
 		if ( isset($config) && is_array($config) )
 		{
@@ -210,7 +219,7 @@ final class core
 	function log($msg , $file = 'admin_log')
 	{
 		$log_file = $this->path . 'main/_temp/_logs/' . $file . '.log';
-		
+			
 		if ( is_writable($log_file) )
 		{
 			// try to open or make it, and set pointer to end of file
@@ -226,14 +235,25 @@ final class core
 		# if no config is set, we go for a die();
 		else
 		{
-			# config found & true so hide modus.
-			if ( isset($config['production']) && $config['production'] )
+			# if it doesn't exist attempt to create (recursion)
+			if ( !file_exists ($log_file) )
 			{
-				return true;
+				$create = fopen($log_file, "w+") or die("error_log_creation");
+					fclose($create);
+				$this->log ($msg, $file);
+				$this->log ('created log file : '. $file, 'create_log');
 			}
 			else
 			{
-				return die('Could write to log file. The error loading to this issue was : <br/>' . $msg . '<br/>requested file : ' . $file);
+				# config found & true so hide modus.
+				if ( isset($config['production']) && $config['production'] )
+				{
+					return true;
+				}
+				else
+				{
+					return die('Could write to log file. The error loading to this issue was : <br/>' . $msg . '<br/>requested file : ' . $file);
+				}
 			}
 		}
 	}
