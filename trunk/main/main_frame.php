@@ -218,7 +218,6 @@ final class core
 	*/
 	function log($msg , $file = 'admin_log')
 	{
-		echo $msg . '<br/>';
 		if ( isset($config['production']) && !$config['production'] )
 		{
 			echo $msg . '<br/>';
