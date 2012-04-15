@@ -15,11 +15,11 @@ final class session
 			$core,
 			$id,
 			$lifeTime = 86400, # 1 houre
-			$contents = array()
 			;
 			
 	private 
-			$hash
+			$hash,
+			$contents = array()
 			;
 			
 	/**
@@ -95,7 +95,6 @@ final class session
 			# insert geeft mysql__insert_id
 			$this->id = $core->db->result;
 		}
-
 	}
 	
 	/**
