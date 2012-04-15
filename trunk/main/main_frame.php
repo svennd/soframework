@@ -14,8 +14,11 @@ final class core
 	public
 		$path,
 		$known_modules			= array(),
-		$mods 					= array(),
-		$naf 					= array('.svn', '.', '..')
+		$loaded_modules			= array()
+		;
+		
+	private
+		$ignore_dirs			= array('.svn')
 		;
 
 	/**
@@ -30,7 +33,7 @@ final class core
 		// undo magic_quotes
 		$this->escape_input();
 		
-		// load configuration, for page, and full framework
+		// load configuration, for page
 		$this->load_config($page_info);
 		
 		// check if no hard stop file has been set
@@ -39,8 +42,6 @@ final class core
 		// save all known modules
 		$this->known_modules = $this->get_all_modules();
 	}
-	
-	// public loaded
 	
 	/**
 	* load modules
@@ -55,7 +56,7 @@ final class core
 			{
 				if ( in_array($module, $this->known_modules) )
 				{
-					$this->mods[] = $module;
+					$this->loaded_modules[] = $module;
 					$this->module_handeling ( $module, 'construct' );
 				}
 				else
@@ -69,7 +70,7 @@ final class core
 		{
 			if ( in_array($module, $this->known_modules))
 			{
-				$this->mods[] = $modules;
+				$this->loaded_modules[] = $modules;
 				$this->module_handeling ( $modules, 'construct' );
 			}
 			else
@@ -89,14 +90,12 @@ final class core
 		$core = $this;
 		
 		# unload all modules who are loaded
-		foreach ( $this->mods as $module )
+		foreach ( $this->loaded_modules as $module )
 		{
 			$this->module_handeling ( $module, 'destruct' );
 		}
 		
 	}
-	
-	// internal loaded	
 
 	/**
 	* check if script can continue
@@ -122,7 +121,7 @@ final class core
 		if ( $handle = opendir($this->path . 'main/_modules/') )
 		{
 			while (false !== ($dir = readdir($handle))) {
-				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $this->naf)) {
+				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $this->ignore_dirs) && $dir != '.' && $dir != '..') {
 					$mods[] = $dir;
 				}
 			}
@@ -147,7 +146,7 @@ final class core
 		}
 		else
 		{
-			$this->log('unknown module loaded : ' .(string) $module , 'error_log');
+			$this->log('unknown module loaded : ' . $module , 'error_log');
 		}
 	}
 		
@@ -218,7 +217,11 @@ final class core
 	*/
 	function log($msg , $file = 'admin_log')
 	{
-		if ( isset($config['production']) && !$config['production'] )
+		# since we write this to file & screen
+		$msg = htmlentities($msg);
+		
+		# if production variable is set to false
+		if ( !$config['production'] )
 		{
 			echo $msg . '<br/>';
 		}
@@ -231,7 +234,7 @@ final class core
 			$fp = fopen($log_file, 'a+');
 			
 			// write to file
-			fwrite($fp, time() . (string) $msg . "\r\n");
+			fwrite($fp, date('h:i:s A m - d - y') . ' : ' . $msg . "\r\n");
 			
 			// close file
 			fclose($fp);
@@ -243,7 +246,7 @@ final class core
 			# if it doesn't exist attempt to create (recursion)
 			if ( !file_exists ($log_file) )
 			{
-				$create = fopen($log_file, "w+") or die("error_log_creation");
+				$create = fopen($log_file, "w+") or die("We could not write/make a log file, please make main/_temp/_log chmod 777");
 					fclose($create);
 				$this->log ($msg, $file);
 				$this->log ('created log file : '. $file, 'create_log');
@@ -257,7 +260,7 @@ final class core
 				}
 				else
 				{
-					return die('Could write to log file. The error loading to this issue was : <br/>' . $msg . '<br/>requested file : ' . $file);
+					return die('We could not write/make a log file, please make main/_temp/_log chmod 777. The error leading to this issue was : <br/>' . $msg . '<br/> requested file : ' . $file . '<br/>');
 				}
 			}
 		}
