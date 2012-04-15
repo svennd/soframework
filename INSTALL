@@ -3,7 +3,10 @@
 #
 #	1) download latest version (check)
 #	2) upload to server (php 5)
-#	3) use the sql code below to 'install' all modules
+#	3) use the sql code below to 'install' all modules (optional)
+#	4) config your framework
+#		a) main/_config.php (ex. _config.default.php)
+# 		b) main/_modules/dabatase/config.php (ex. config.default.php)
 #	4) you are ready to rumble!
 #
 # Thx for downloading our software

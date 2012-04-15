@@ -13,7 +13,8 @@ final class mysql
 {
 	public 
 		$core,
-		$db_ready = false
+		$db_ready 	= false,
+		$result		= false
 		;
 	
 	/**
@@ -55,14 +56,14 @@ final class mysql
 		$this->db_link = mysql_connect($host, $user, $password) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$this->db_link)
 		{
-			return $this->return = false;
+			return $this->result = false;
 		}
 		
 		// database selection
 		$db_selected = mysql_select_db($db, $this->db_link) or $this->core->log('DB error : ' . mysql_errno() . mysql_error(), 'error_log');
 		if (!$db_selected)
 		{
-			return $this->return = false;
+			return $this->result = false;
 		}
 		
 		return true;
@@ -82,17 +83,16 @@ final class mysql
 	* do the query
 	* @param string $query SQL
 	* @param string $file file of request
-	* @lijn int $lijn
+	* @param int $lijn
+	* @param string result type
 	*/	
-	public function sql ($query, $file = 'unkown', $lijn = 'unknown')
+	public function sql ($query, $file = 'unkown', $lijn = 'unknown', $method = 'ASSOC')
 	{		
 		# send the query
-		$result = mysql_query($query) or $this->core->log('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error(), 'error_log');
+		$result = mysql_query($query) or $this->core->log('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error() . ' could not execute query, ' . htmlspecialchars($query), 'error_log');
 				
-		# dit verwijderd spaties & enters
-		# vb : sql(' SELECT ...
-		# sql('
-		#		SELECT ...
+		# dit verwijderd meerdere spaties en vervangt door 1
+		# vb : sql('     SELECT     *  FROM   table ... --> sql(' SELECT * FROM table
 		$query = trim(preg_replace('/\s+/', ' ', $query));
 		
 		# verwerk de resultaten
@@ -101,44 +101,61 @@ final class mysql
 			# select, show en explain geven "array" resource terug
 			if ( preg_match('/^(SELECT|SHOW|EXPLAIN)/i', $query) )
 			{
-				# linux (correctly) sets 0 results as result, however we like to get a fail on the query then ;)
+				# if query returns 0 lines but is valid
 				if ( mysql_num_rows( $result ) == 0 )
 				{
 					return $this->result = false;
 				}
 				
-				# fix ; in het geval deze al gezet is tijdens deze pagina.
+				# clean out, in case a value have been set before, 
+				# but we reached this point anyway.
 				$this->result = array();
 				
-				# lees de resultaten uit
-				while ( $d = mysql_fetch_array($result, MYSQL_ASSOC) )
+				# read out the results using the defined result type
+				if ($method == "BOTH")
 				{
-					$this->result[] = $d;
+					while ( $d = mysql_fetch_array($result, MYSQL_BOTH) )
+					{
+						$this->result[] = $d;
+					}
+				}
+				else if ($method == "NUM")
+				{
+					while ( $d = mysql_fetch_array($result, MYSQL_NUM) )
+					{
+						$this->result[] = $d;
+					}
+				}
+				else
+				{
+					while ( $d = mysql_fetch_array($result, MYSQL_ASSOC) )
+					{
+						$this->result[] = $d;
+					}
 				}
 				
 				# clean up the request
 				mysql_free_result( $result );
 				
-				if ( preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
+				# in case its a 1 value only return as non-array
+				if ( in_array($method, array("NUM", "BOTH")) && preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
 				{
 					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
 				}
 
 				return $this->result;
 			}
-			# delete, insert, (...) geven een bool terug
+			# delete, insert, (...) geven een bool/int terug
 			else
 			{
-				if( preg_match('/^INSERT/i', $query) )
-				{
-					# id van de nieuwe rij
-					return $this->result = mysql_insert_id();
-				}
-				else
-				{
-					# aantal aangepaste rijen, indien 0 failed.
-					return $this->result = mysql_affected_rows();
-				}
+				# insert : return insert id
+				# insert/update : rows adapted
+				$this->result = (preg_match('/^INSERT/i', $query)) ? mysql_insert_id() : mysql_affected_rows();
+			
+				# clean up the request
+				mysql_free_result( $result );
+				
+				return $this->result;
 			}
 		}
 		else
