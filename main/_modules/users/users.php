@@ -19,7 +19,7 @@ final class user
 		;
 	
 	private 
-		$salt = 'blaat123'
+		$salt = 'xTf.32G'
 		;
 	
 	/**
@@ -51,7 +51,7 @@ final class user
 	*/
 	public function set_salt ($salt)
 	{
-		$this->salt = $salt;
+		$this->salt = $this->salt . $salt;
 	}
 	
 	/**
@@ -71,17 +71,17 @@ final class user
 			
 			$this->core->db->sql("INSERT INTO 
 				`user_data` (
-						`username`,
-						`level`,
-						`pass_hash`,
-						`email`,
-						`reg_date`
+							`username`,
+							`level`,
+							`pass_hash`,
+							`email`,
+							`reg_date`
 						) VALUES (
-						'" . $this->core->db->esc($user) . "', 
-						" . $level . ", 
-						'" . $pass_hash . "', 
-						'" . $this->core->db->esc($email) . "',
-						NOW()
+							'" . $this->core->db->esc($user) . "', 
+							" . $level . ", 
+							'" . $pass_hash . "', 
+							'" . $this->core->db->esc($email) . "',
+							NOW()
 						);",
 						__FILE__, __LINE__);
 						
@@ -122,9 +122,9 @@ final class user
 			$this->core->db->sql('SELECT id, username, level FROM `user_data` WHERE `username` = "' . $user . '" AND `pass_hash` = "' . $pass_hash . '" LIMIT 1;', __FILE__, __LINE__);
 		
 			# gebruiker ophalen
-			# lazy evaluation (?)
-			if ( isset($this->core->db->result) && $r = $this->core->db->result )
+			if ( $this->core->db->result )
 			{
+				$r = $this->core->db->result;
 				# user is found, lets set up his data
 				$this->core->session->put(array(
 					'user_id'       	=> $r['id'],
@@ -158,8 +158,10 @@ final class user
 	*/
 	public function is_logged()
 	{
-		# mss een andere manier ?
-		return ( $this->core->session->get('user_level') >= 1) ? true : false;
+		# we check user_level
+		# we could also check if get(user_name) != guest
+		# or get(user_id) != 0
+		return ( $this->is_level(1)) ? true : false;
 	}
 
 	/**
@@ -206,6 +208,10 @@ final class user
 	*/
 	private function make_pass_hash ($user, $password)
 	{
+		# this is just an attempt on making password stronger
+		# it would be nice if $this->salt (set at beginning of this file)
+		# is set to another value
+		# optionally we can use user->set_salt('my_extra_salt')
 		return hash('sha256', $this->salt . strtolower($user) . $password);
 	}
 }

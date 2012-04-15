@@ -34,3 +34,13 @@
 ##############
 #	SOF is made by Svenn D'Hert and is foremost a tool for personal use.
 #	However everyone is free to use & share under the GNU v2 license.
+
+##############
+##SUPPORT
+##############
+#	Install procedure is found in INSTALL file located in the download
+#	Support can be found on code.google.com/p/soframework and on svennd.be
+#	an example system method of working with the core is included in the download
+#	index.php (start file, redirects to other examples)
+#	public/* (example files)
+#	main/_view/* (template files, *.tpl)
