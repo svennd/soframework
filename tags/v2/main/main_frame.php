@@ -221,7 +221,7 @@ final class core
 		$msg = htmlentities($msg);
 		
 		# if production variable is set to false
-		if ( !$config['production'] )
+		if ( isset($config['production']) && !$config['production'] )
 		{
 			echo $msg . '<br/>';
 		}
