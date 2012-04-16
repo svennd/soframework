@@ -148,14 +148,10 @@ final class mysql
 			# delete, insert, (...) geven een bool/int terug
 			else
 			{
+				# no mysql_free_result needed; only select,show,explain and descripe return resource
 				# insert : return insert id
 				# insert/update : rows adapted
-				$this->result = (preg_match('/^INSERT/i', $query)) ? mysql_insert_id() : mysql_affected_rows();
-			
-				# clean up the request
-				mysql_free_result( $result );
-				
-				return $this->result;
+				return $this->result = (preg_match('/^INSERT/i', $query)) ? mysql_insert_id() : mysql_affected_rows();
 			}
 		}
 		else
