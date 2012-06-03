@@ -196,15 +196,14 @@ final class core
 	private function load_config () 
 	{
 		# add global config file
-		if ( is_file($this->path . 'main/_config.php') )
+		if ( is_file($this->path . '_main/_config.php') )
 		{
-			include($this->path . 'main/_config.php');
+			include($this->path . '_main/_config.php');
 		}
 		else
 		{
 			# clearly something is not right
-			$this->log("Could not load main config file." . $this->path . "main/_config.php" , 'boot_log');
-			die('Main config file could not be located. Please check logs for more info.');
+			die('Main config file could not be located.');
 		}
 		
 		# main config array
@@ -252,7 +251,7 @@ final class core
 				if ( 
 					is_dir( $this->path . '_main/core/' . $dir ) && 
 					!in_array($dir, $this->ignore_dirs) &&
-					is_file( $this->path . '_main/core/' . $dir . '/boot.php' 
+					is_file( $this->path . '_main/core/' . $dir . '/boot.php' )
 					) 
 				{
 					include ( $this->path . '_main/core/' . $dir . '/boot.php' );
