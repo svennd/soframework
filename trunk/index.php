@@ -1,6 +1,6 @@
 <?php
 #   Svenn D'Hert
-include('main/main_frame.php');
+include('_main/main_frame.php');
  
 # initialise frame
 $core = new core();

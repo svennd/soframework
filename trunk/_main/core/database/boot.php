@@ -7,7 +7,7 @@
 
 // no direct acces
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
-
+print_r(get_defined_vars());
 // check if we got a config file
 if ( !file_exists($module_path . 'config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
 
