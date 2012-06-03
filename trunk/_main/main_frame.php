@@ -14,32 +14,39 @@ final class core
 	public
 		$path,
 		$known_modules			= array(),
-		$loaded_modules			= array()
+		$loaded_modules			= array(),
+		$core_modules			= array()
 		;
 		
 	private
-		$ignore_dirs			= array('.svn')
+		$ignore_dirs			= array('.', '..')
 		;
 
 	/**
 	* initialize
 	* @param array
 	*/
-	function __construct($page_info = array())
+	function __construct($path = "", $page_info = array())
 	{
-		// reference
-		$core = $this;
-
-		// undo magic_quotes
-		$this->escape_input();
+		$core 		= $this;
+		$this->path = $path;
 		
-		// load configuration, for page
-		$this->load_config($page_info);
-		
-		// check if no hard stop file has been set
+		# check if no hard exit file has been set
 		$this->check_access();
 		
-		// save all known modules
+		# load config file in buffer
+		$this->load_config();
+		
+		# bootstrap core modules
+		$this->load_core();
+		
+		# undo magic_quotes
+		$this->escape_input();
+		
+		# parse page info
+		$this->handle_page_info($page_info);
+		
+		# search all valid modules
 		$this->known_modules = $this->get_all_modules();
 	}
 	
@@ -49,24 +56,9 @@ final class core
 	*/
 	public function load_modules ( $modules )
 	{
-		# more then one module load_modules( array('module1', 'module2') );
-		if ( is_array($modules) )
-		{
-			foreach ( $modules as $module )
-			{
-				if ( in_array($module, $this->known_modules) )
-				{
-					$this->loaded_modules[] = $module;
-					$this->module_handeling ( $module, 'construct' );
-				}
-				else
-				{
-					$this->log('unknown module requested : '. $module, 'error_log');
-				}
-			}
-		}
-		# only 1 module string like given load_modules('module1');
-		else
+		$modules = (!is_array($modules)) ? array($modules) : $modules;
+	
+		foreach ( $modules as $module )
 		{
 			if ( in_array($module, $this->known_modules))
 			{
@@ -75,9 +67,10 @@ final class core
 			}
 			else
 			{
-				$this->log('unknown module requested : '. $module, 'error_log');
+				$this->log('Unknown module requested : '. $module, 'error_log');
 			}
 		}
+
 	}
 	
 	/**
@@ -94,7 +87,12 @@ final class core
 		{
 			$this->module_handeling ( $module, 'destruct' );
 		}
-		
+
+		foreach ( $this->core_modules as $module )
+		{
+			$this->module_handeling ( $module, 'destruct', true );
+		}
+
 	}
 
 	/**
@@ -102,10 +100,10 @@ final class core
 	*/
 	private function check_access ()
 	{
-		if (file_exists($this->path . 'main/index.exit'))
+		if (file_exists($this->path . '_main/index.exit'))
 		{
-			$var = file_get_contents($this->path . 'main/index.exit');
-			echo htmlspecialchars($var);
+			$var = file_get_contents($this->path . '_main/index.exit');
+				echo htmlspecialchars($var);
 			exit;
 		}
 		return true;
@@ -117,18 +115,24 @@ final class core
 	*/
 	private function get_all_modules ()
 	{
-		// open dir
-		if ( $handle = opendir($this->path . 'main/_modules/') )
+		# read all modules, if valid module, add to loadable list
+		if ( $handle = opendir($this->path . '_modules/') )
 		{
-			while (false !== ($dir = readdir($handle))) {
-				if ( is_dir( $this->path . 'main/_modules/' . $dir ) && !in_array($dir, $this->ignore_dirs) && $dir != '.' && $dir != '..') {
+			while (false !== ($dir = readdir($handle)))
+			{
+				if ( 
+						is_dir( $this->path . '_modules/' . $dir ) && 
+						!in_array($dir, $this->ignore_dirs) &&
+						is_file( $this->path . '_modules/' . $dir . '/boot.php' )
+						) 
+				{
 					$mods[] = $dir;
 				}
 			}
 			closedir($handle);
 		}
 
-		return (!empty($mods)) ? $mods : array();
+		return (!isset($mods)) ? $mods : array();
 	}
 	
 	/**
@@ -136,25 +140,41 @@ final class core
 	* @param string $file
 	* @param string $mode
 	*/
-	private function module_handeling( $module, $mode )
+	private function module_handeling( $module, $mode, $is_core = false )
 	{
-		if ( is_file($this->path . 'main/_modules/' . $module . '/boot.php') )
+		if ( $is_core )
 		{
-			$core = $this;
-			$module_path = $this->path . 'main/_modules/' . $module . '/';
-			include($this->path . 'main/_modules/' . $module . '/boot.php');
+			if ( is_file($this->path . '_main/core/' . $module . '/boot.php') )
+			{
+				$core = $this;
+				$module_path = $this->path . '_main/core/' . $module . '/';
+				include($module_path . 'boot.php');
+			}
+			else
+			{
+				$this->log('unknown core module loaded : ' . $module , 'error_log');
+			}
 		}
 		else
 		{
-			$this->log('unknown module loaded : ' . $module , 'error_log');
+			if ( is_file($this->path . '_modules/' . $module . '/boot.php') )
+			{
+				$core = $this;
+				$module_path = $this->path . '_modules/' . $module . '/';
+				include($module_path . 'boot.php');
+			}
+			else
+			{
+				$this->log('unknown module loaded : ' . $module , 'error_log');
+			}
 		}
 	}
 		
 	/**
-	* load config
+	* handle page info array
 	* @param array $page_info
 	*/
-	private function load_config ($page_info) 
+	private function handle_page_info ($page_info)
 	{
 		# save page info
 		if ( is_array($page_info) && !empty($page_info) )
@@ -168,7 +188,13 @@ final class core
 				$this->_page->{$k} = $v;
 			}
 		}
-		
+	}
+	
+	/**
+	* load config
+	*/
+	private function load_config () 
+	{
 		# add global config file
 		if ( is_file($this->path . 'main/_config.php') )
 		{
@@ -177,7 +203,7 @@ final class core
 		else
 		{
 			# clearly something is not right
-			$this->log("Could not load main config file, maybe main/_config.default.php not renamed ?" , 'boot_log');
+			$this->log("Could not load main config file." . $this->path . "main/_config.php" , 'boot_log');
 			die('Main config file could not be located. Please check logs for more info.');
 		}
 		
@@ -211,58 +237,40 @@ final class core
 	}
 	
 	/**
-	* register a handeling
-	* @param string $msg
-	* @param string $file
-	*/
-	function log($msg , $file = 'admin_log')
+	* load core modules
+	*/	
+	private function load_core()
 	{
-		# since we write this to file & screen
-		$msg = htmlentities($msg);
+		$core_modules = array();
 		
-		# if production variable is set to false
-		if ( !$config['production'] )
+		// load core modules
+		$mode = "core";
+		if ( $handle = opendir($this->path . '_main/core/') )
 		{
-			echo $msg . '<br/>';
-		}
-		
-		$log_file = $this->path . 'main/_temp/_logs/' . $file . '.log';
-			
-		if ( is_writable($log_file) )
-		{
-			// try to open or make it, and set pointer to end of file
-			$fp = fopen($log_file, 'a+');
-			
-			// write to file
-			fwrite($fp, date('h:i:s A m - d - y') . ' : ' . $msg . "\r\n");
-			
-			// close file
-			fclose($fp);
-		}
-		# we got errors we cannot save so check what configs says
-		# if no config is set, we go for a die();
-		else
-		{
-			# if it doesn't exist attempt to create (recursion)
-			if ( !file_exists ($log_file) )
+			while (false !== ($dir = readdir($handle)))
 			{
-				$create = fopen($log_file, "w+") or die("We could not write/make a log file, please make main/_temp/_log chmod 777");
-					fclose($create);
-				$this->log ($msg, $file);
-				$this->log ('created log file : '. $file, 'create_log');
-			}
-			else
-			{
-				# config found & true so hide modus.
-				if ( isset($config['production']) && $config['production'] )
+				if ( 
+					is_dir( $this->path . '_main/core/' . $dir ) && 
+					!in_array($dir, $this->ignore_dirs) &&
+					is_file( $this->path . '_main/core/' . $dir . '/boot.php' 
+					) 
 				{
-					return true;
-				}
-				else
-				{
-					return die('We could not write/make a log file, please make main/_temp/_log chmod 777. The error leading to this issue was : <br/>' . $msg . '<br/> requested file : ' . $file . '<br/>');
+					include ( $this->path . '_main/core/' . $dir . '/boot.php' );
+					$core_modules[$load_level] = $dir;
 				}
 			}
+			closedir($handle);
+		}
+		
+		// load based on load_level
+		$mode = "construct";
+		$this->core_modules = sort($core_modules);
+		
+		foreach ($this->core_modules as $core_module)
+		{
+			$core = $this;
+			$module_path = $this->path . '_main/core/' . $core_module . '/';
+			include ( $module_path . 'boot.php' );
 		}
 	}
 }

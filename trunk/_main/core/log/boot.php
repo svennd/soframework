@@ -11,22 +11,17 @@ if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 switch ($mode)
 {
 	case "core" :
-				$load_level = 3;
+				$load_level = 0;
 		break;
 		
 	// start the module
 	case "construct" :
 		
 				// include the class file
-				include $module_path . 'view.php';
+				include $module_path . 'log.php';
 				
 				// 'boot' the class
-				$this->view = new view($this);
-		break;
-	
-	// end of database connection
-	case "destruct" :
-				$this->view->push_output();
+				$this->log = new log($this);
 		break;
 }
 

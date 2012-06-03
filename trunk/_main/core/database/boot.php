@@ -9,10 +9,14 @@
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
 // check if we got a config file
-if ( !file_exists($module_path . 'config.php') ){ exit('Please fill in /main/_modules/database/config.php, there is an example file config.default.php.'); }
+if ( !file_exists($module_path . 'config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
 
 switch ($mode)
 {
+	case "core" :
+				$load_level = 1;
+		break;
+		
 	// start the module
 	case "construct" :
 		
