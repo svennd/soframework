@@ -6,17 +6,19 @@
 */
 
 // no direct acces
-if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
-print_r(get_defined_vars());
+if ( !isset($this) ) { exit('direct_acces_not_allowed'); }
+
 // check if we got a config file
 if ( !file_exists($module_path . 'config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
 
+$settings = array(
+					'load_hook' 	=> 2,
+					'unload_hook' 	=> 9
+				);
+				
+$mode = (isset($mode)) ? $mode : '';
 switch ($mode)
-{
-	case "core" :
-				$load_level = 1;
-		break;
-		
+{	
 	// start the module
 	case "construct" :
 		
