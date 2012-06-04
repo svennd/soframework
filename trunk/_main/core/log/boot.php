@@ -8,12 +8,12 @@
 // no direct acces
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
+$settings = array(
+					'load_hook' 	=> 3
+				);
+$mode = (isset($mode)) ? $mode : '';
 switch ($mode)
 {
-	case "core" :
-				$load_level = 0;
-		break;
-		
 	// start the module
 	case "construct" :
 		

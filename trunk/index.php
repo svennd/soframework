@@ -5,6 +5,8 @@ include('_main/main_frame.php');
 # initialise frame
 $core = new core();
 
+$core->load_modules(array());
+
 # output for the header
 $core->view->use_page('header');
 

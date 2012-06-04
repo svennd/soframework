@@ -13,9 +13,8 @@ final class core
 {
 	public
 		$path,
-		$known_modules			= array(),
-		$loaded_modules			= array(),
-		$core_modules			= array()
+		$modules				= array(),
+		$loaded_modules			= array()
 		;
 		
 	private
@@ -33,44 +32,48 @@ final class core
 		
 		# check if no hard exit file has been set
 		$this->check_access();
-		
-		# load config file in buffer
-		$this->load_config();
-		
-		# bootstrap core modules
+
+		# bootstrap core
 		$this->load_core();
-		
-		# undo magic_quotes
-		$this->escape_input();
-		
+			
 		# parse page info
 		$this->handle_page_info($page_info);
 		
-		# search all valid modules
-		$this->known_modules = $this->get_all_modules();
 	}
 	
 	/**
-	* load modules
-	* @param mixed $modules
+	* load user_modules
+	* @param mixed $user_modules
 	*/
-	public function load_modules ( $modules )
+	public function load_modules ( $user_modules )
 	{
-		$modules = (!is_array($modules)) ? array($modules) : $modules;
+		$user_modules = (!is_array($user_modules)) ? array($user_modules) : $user_modules;
 	
-		foreach ( $modules as $module )
+		foreach ( $user_modules as $module )
 		{
-			if ( in_array($module, $this->known_modules))
+			if ( 
+				is_dir( $this->path . '_main/core/' . $module ) && 
+				!in_array($module, $this->ignore_dirs) &&
+				is_file( $this->path . '_main/core/' . $module . '/boot.php' )
+				) 
 			{
-				$this->loaded_modules[] = $modules;
-				$this->module_handeling ( $modules, 'construct' );
+				# if wanne add load & unload hooks to user_modules add include here
+				$this->module[] = array(
+						'module_name' 	=> $module,
+						'module_type'	=> 'user',
+						'module_load'	=> '',
+						'module_unload'	=> '' 
+						);
 			}
 			else
 			{
-				$this->log('Unknown module requested : '. $module, 'error_log');
+				die('Unknown module requested : '. $module);
 			}
 		}
-
+		
+		print_r($this->module);
+		array_multisort($this->module, SORT_ASC, SORT_NUMERIC);
+		print_r($this->module);
 	}
 	
 	/**
@@ -108,33 +111,7 @@ final class core
 		}
 		return true;
 	}
-	
-	/**
-	* get all available modules
-	* @return array
-	*/
-	private function get_all_modules ()
-	{
-		# read all modules, if valid module, add to loadable list
-		if ( $handle = opendir($this->path . '_modules/') )
-		{
-			while (false !== ($dir = readdir($handle)))
-			{
-				if ( 
-						is_dir( $this->path . '_modules/' . $dir ) && 
-						!in_array($dir, $this->ignore_dirs) &&
-						is_file( $this->path . '_modules/' . $dir . '/boot.php' )
-						) 
-				{
-					$mods[] = $dir;
-				}
-			}
-			closedir($handle);
-		}
 
-		return (!isset($mods)) ? $mods : array();
-	}
-	
 	/**
 	* handle modules
 	* @param string $file
@@ -191,10 +168,30 @@ final class core
 	}
 	
 	/**
-	* load config
-	*/
-	private function load_config () 
+	* undo magic_quotes
+	*/	
+	private function escape_input()
 	{
+		function undo_magic_quotes($v)
+		{
+			return is_array($v) ? array_map('undo_magic_quotes', $v) : stripslashes($v);
+		}
+		 
+		if ( function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() )
+		{
+			$_GET    = array_map('undo_magic_quotes', $_GET);
+			$_POST   = array_map('undo_magic_quotes', $_POST);
+			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
+		}
+	}
+	
+	/**
+	* load core 
+	*/	
+	private function load_core()
+	{
+		$core_modules = array();
+		
 		# add global config file
 		if ( is_file($this->path . '_main/_config.php') )
 		{
@@ -215,35 +212,11 @@ final class core
 				$this->{$k} = $v;
 			}
 		}
-	}
-	
-	/**
-	* undo magic_quotes
-	*/	
-	private function escape_input()
-	{
-		function undo_magic_quotes($v)
-		{
-			return is_array($v) ? array_map('undo_magic_quotes', $v) : stripslashes($v);
-		}
-		 
-		if ( function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() )
-		{
-			$_GET    = array_map('undo_magic_quotes', $_GET);
-			$_POST   = array_map('undo_magic_quotes', $_POST);
-			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
-		}
-	}
-	
-	/**
-	* load core modules
-	*/	
-	private function load_core()
-	{
-		$core_modules = array();
 		
-		// load core modules
-		$mode = "core";
+		# undo magic_quotes
+		$this->escape_input();
+		
+		# load core modules
 		if ( $handle = opendir($this->path . '_main/core/') )
 		{
 			while (false !== ($dir = readdir($handle)))
@@ -254,22 +227,17 @@ final class core
 					is_file( $this->path . '_main/core/' . $dir . '/boot.php' )
 					) 
 				{
+					$module_path = $this->path . '_main/core/' . $dir . '/';
 					include ( $this->path . '_main/core/' . $dir . '/boot.php' );
-					$core_modules[$load_level] = $dir;
+					$this->module[] = array(
+										'module_name' 	=> $dir,
+										'module_type'	=> 'core',
+										'module_load'	=> ((isset($settings['load_hook'])) ? $settings['load_hook'] : '' ),
+										'module_unload'	=> ((isset($settings['unload_hook'])) ? $settings['unload_hook'] : '' )
+										);
 				}
 			}
 			closedir($handle);
-		}
-		
-		// load based on load_level
-		$mode = "construct";
-		$this->core_modules = sort($core_modules);
-		
-		foreach ($this->core_modules as $core_module)
-		{
-			$core = $this;
-			$module_path = $this->path . '_main/core/' . $core_module . '/';
-			include ( $module_path . 'boot.php' );
 		}
 	}
 }
