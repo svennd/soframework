@@ -2,6 +2,6 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl-be">
 	<head>
-		<title><?php echo $header['title'] ?></title>
+		<title>titel</title>
 	</head>
 	<body>

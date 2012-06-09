@@ -14,8 +14,7 @@ final class view
 	public 
 		$core,
 		$variables = array(),
-		$file_list = array(),
-		$user_buffer = false
+		$file_list = array()
 		;
 	
 	private
@@ -53,44 +52,12 @@ final class view
 	}
 	
 	/**
-	* use the buffer or instand output
-	* @param bool $bool
-	*/
-	public function user_buffer ( $bool )
-	{
-		$this->user_buffer = (bool) $bool;
-	}
-	
-	/**
 	* process the requested page
 	* @param string $file
 	*/
 	public function use_page ($file)
 	{
-		# if we use the output buffer we save the content
-		if ( $this->user_buffer )
-		{
-			# vars for the current file
-			if ( !empty($this->variables) )
-			{
-				extract($this->variables);
-			}
-			
-			if(file_exists($this->core->path . "main/_view/" . $file . ".tpl"))
-			{
-				ob_start();
-					include($this->core->path . "main/_view/" . $file . ".tpl");
-					
-				$this->page .= ob_get_contents();
-				
-				ob_end_clean();
-			}
-		}
-		# save the file and do it later ^_^
-		else
-		{
-			$this->file_list[] = $file;
-		}
+		$this->file_list[] = $file;
 	}
 	
 	/**
@@ -107,9 +74,13 @@ final class view
 		# load all the pages and output them
 		foreach ( $this->file_list as $file )
 		{
-			if(file_exists($this->core->path . "main/_view/" . $file . ".tpl"))
+			if(file_exists($this->core->path . "_modules/view/_view/" . $file . ".tpl"))
 			{
-				include($this->core->path . "main/_view/" . $file . ".tpl");
+				include($this->core->path . "_modules/view/_view/" . $file . ".tpl");
+			}
+			else
+			{
+				die('couldn\t find a file needed for view module :' . htmlspecialchars($file));
 			}
 		}
 	}
