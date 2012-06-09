@@ -7,19 +7,4 @@
 
 # main config variable
 $config = array (
-					# site config (meta)
-					'siteName'		=> '',
-					'siteCopy'		=> '',
-					'siteDesigner' 	=> '',
-					'siteKeywords' 	=> '',
-					
-					# admin settings
-					'adminEmail' 	=> '',
-					'adminName'  	=> '',
-					'sysPass'		=> '',
-										
-					# environment
-					'production'	=> 'false', # bool
-					'use_cache'		=> 'false', # bool
-			
 				);
