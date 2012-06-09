@@ -1,5 +1,5 @@
 	<div id='footer'>
-		&copy; santa
+		&copy; SoFramework
 	</div>
 </body>
 </html>
