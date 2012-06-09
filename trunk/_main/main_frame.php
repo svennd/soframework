@@ -13,11 +13,7 @@ final class core
 {
 	public
 		$path,
-		$unload_modules			= array()
-		;
-		
-	private
-		$ignore_dirs			= array('.', '..')
+		$module_unload_sequence	= array()
 		;
 
 	/**
@@ -46,8 +42,15 @@ final class core
 	*/
 	public function load_modules ( $modules )
 	{
-		$modules = (!is_array($modules)) ? array($modules) : $modules;
-	
+		# make sure its an array (in case only 1 module was needed)
+		$modules 		= (!is_array($modules)) ? array($modules) : $modules;
+		
+		# init some arrays
+		$sort_load 		= array();
+		$sort_unload 	= array();
+		$nosort_load 	= array();
+		$nosort_unload 	= array();
+		
 		# referentie
 		$core = $this;
 			
@@ -55,35 +58,55 @@ final class core
 		{
 			# check if the module exist & valid
 			# load into buffer
-			if ( 
-				is_dir( $this->path . '_modules/' . $module ) && 
-				!in_array($module, $this->ignore_dirs) &&
-				is_file( $this->path . '_modules/' . $module . '/boot.php' )
-				) 
+			if ( is_dir( $this->path . '_modules/' . $module ) && is_file( $this->path . '_modules/' . $module . '/boot.php' )) 
 			{
 				$core = $this;
+				$settings = array();
 				include ( $this->path . '_modules/' . $module . '/boot.php' );
-				$need_to_loads[] = array(
-						'module_name' 	=> $module,
-						'module_load'	=> (isset($settings['load_hook'])? $settings['load_hook'] : '999'),
-						'module_unload'	=> (isset($settings['unload_hook'])? $settings['unload_hook'] : '999') 
-						);
+				
+				# check load hook number
+				if ( isset($settings['load_hook']))
+				{
+					if ( isset($sort_load[$settings['load_hook']]) )
+					{
+						die('duplicate load_hook, loading module :' . $module);
+					}
+					$sort_load[$settings['load_hook']] = $module;
+				}
+				# doesn't mather when we load
+				else				
+				{
+					$nosort_load[] = $module;
+				}
+				
+				# check unload hook number
+				if ( isset($settings['unload_hook']))
+				{
+					if ( isset($sort_unload[$settings['unload_hook']]) )
+					{
+						die('duplicate unload_hook, unloading module :' . $module);
+					}
+					$sort_unload[$settings['unload_hook']] = $module;
+				}
+				# doesn't mather when we load
+				else				
+				{
+					$nosort_unload[] = $module;
+				}
 			}
 			else
 			{
 				die('Unknown module requested : '. $module);
 			}
 		}
+		
+		sort($sort_load);
+		$load_sequence = array_merge($sort_load, $nosort_load);
 				
-		foreach ($need_to_loads as $key => $value)
-		{
-			$module_load[$value['module_load']] = $value['module_name'];
-			$this->unload_modules[$value['module_unload']] = $value['module_name'];
-		}
+		rsort($sort_unload);
+		$this->module_unload_sequence = array_merge($sort_unload, $nosort_unload);
 		
-		ksort($module_load, SORT_NUMERIC);
-		
-		foreach ($module_load as $k => $load_module)
+		foreach ($load_sequence as $k => $load_module)
 		{
 			$this->module_handeling ( $load_module, 'construct' );
 		}
@@ -98,9 +121,7 @@ final class core
 		# referentie
 		$core = $this;
 		
-		ksort($this->unload_modules, SORT_NUMERIC);
-		
-		foreach ($this->unload_modules as $k => $unload_module)
+		foreach ($this->module_unload_sequence as $k => $unload_module)
 		{
 			$this->module_handeling ( $unload_module, 'destruct' );
 		}

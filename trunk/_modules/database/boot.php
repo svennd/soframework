@@ -13,7 +13,7 @@ if ( !file_exists($core->path . '_modules/database/config.php') ){ exit('Please 
 
 $settings = array(
 					'load_hook' 	=> 1,
-					'unload_hook' 	=> 9
+					'unload_hook' 	=> 2
 				);
 				
 $mode = (isset($mode)) ? $mode : '';

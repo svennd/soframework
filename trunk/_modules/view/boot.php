@@ -8,8 +8,6 @@
 // no direct acces
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
-$settings = array();
-
 $mode = (isset($mode)) ? $mode : '';
 switch ($mode)
 {
