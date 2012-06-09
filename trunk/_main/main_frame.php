@@ -13,8 +13,7 @@ final class core
 {
 	public
 		$path,
-		$modules				= array(),
-		$loaded_modules			= array()
+		$modules				= array()
 		;
 		
 	private
@@ -27,7 +26,7 @@ final class core
 	*/
 	function __construct($path = "", $page_info = array())
 	{
-		$core 		= $this;
+		# save execution path
 		$this->path = $path;
 		
 		# check if no hard exit file has been set
@@ -42,27 +41,30 @@ final class core
 	}
 	
 	/**
-	* load user_modules
-	* @param mixed $user_modules
+	* load modules
+	* @param mixed $modules
 	*/
-	public function load_modules ( $user_modules )
+	public function load_modules ( $modules )
 	{
-		$user_modules = (!is_array($user_modules)) ? array($user_modules) : $user_modules;
+		$modules = (!is_array($modules)) ? array($modules) : $modules;
 	
-		foreach ( $user_modules as $module )
+		foreach ( $modules as $module )
 		{
+			# check if the module exist & valid
+			# load into buffer
 			if ( 
-				is_dir( $this->path . '_main/core/' . $module ) && 
+				is_dir( $this->path . '_modules/' . $module ) && 
 				!in_array($module, $this->ignore_dirs) &&
-				is_file( $this->path . '_main/core/' . $module . '/boot.php' )
+				is_file( $this->path . '_modules/' . $module . '/boot.php' )
 				) 
 			{
-				# if wanne add load & unload hooks to user_modules add include here
-				$this->module[] = array(
+				$core = $this;
+				include ( $this->path . '_modules/' . $module . '/boot.php' );
+				$this->modules[] = array(
 						'module_name' 	=> $module,
 						'module_type'	=> 'user',
-						'module_load'	=> '',
-						'module_unload'	=> '' 
+						'module_load'	=> (isset($settings['load_hook'])? $settings['load_hook'] : ''),
+						'module_unload'	=> (isset($settings['unload_hook'])? $settings['unload_hook'] : '') 
 						);
 			}
 			else
@@ -71,9 +73,7 @@ final class core
 			}
 		}
 		
-		print_r($this->module);
-		array_multisort($this->module, SORT_ASC, SORT_NUMERIC);
-		print_r($this->module);
+		print_r($this->modules);
 	}
 	
 	/**
@@ -89,11 +89,6 @@ final class core
 		foreach ( $this->loaded_modules as $module )
 		{
 			$this->module_handeling ( $module, 'destruct' );
-		}
-
-		foreach ( $this->core_modules as $module )
-		{
-			$this->module_handeling ( $module, 'destruct', true );
 		}
 
 	}
@@ -134,6 +129,7 @@ final class core
 	/**
 	* handle page info array
 	* @param array $page_info
+	* function is able to fail if nothing is given
 	*/
 	private function handle_page_info ($page_info)
 	{
@@ -148,26 +144,6 @@ final class core
 			{
 				$this->_page->{$k} = $v;
 			}
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	* undo magic_quotes
-	*/	
-	private function escape_input()
-	{
-		function undo_magic_quotes($v)
-		{
-			return is_array($v) ? array_map('undo_magic_quotes', $v) : stripslashes($v);
-		}
-		 
-		if ( function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() )
-		{
-			$_GET    = array_map('undo_magic_quotes', $_GET);
-			$_POST   = array_map('undo_magic_quotes', $_POST);
-			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
 		}
 	}
 	
@@ -200,31 +176,19 @@ final class core
 		}
 		
 		# undo magic_quotes
-		$this->escape_input();
-		
-		# load core modules
-		if ( $handle = opendir($this->path . '_main/core/') )
+		function undo_magic_quotes($v)
 		{
-			while (false !== ($dir = readdir($handle)))
-			{
-				if ( 
-					is_dir( $this->path . '_main/core/' . $dir ) && 
-					!in_array($dir, $this->ignore_dirs) &&
-					is_file( $this->path . '_main/core/' . $dir . '/boot.php' )
-					) 
-				{
-					$module_path = $this->path . '_main/core/' . $dir . '/';
-					include ( $this->path . '_main/core/' . $dir . '/boot.php' );
-					$this->module[] = array(
-										'module_name' 	=> $dir,
-										'module_type'	=> 'core',
-										'module_load'	=> ((isset($settings['load_hook'])) ? $settings['load_hook'] : '' ),
-										'module_unload'	=> ((isset($settings['unload_hook'])) ? $settings['unload_hook'] : '' )
-										);
-				}
-			}
-			closedir($handle);
+			return is_array($v) ? array_map('undo_magic_quotes', $v) : stripslashes($v);
 		}
+		 
+		if ( function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() )
+		{
+			$_GET    = array_map('undo_magic_quotes', $_GET);
+			$_POST   = array_map('undo_magic_quotes', $_POST);
+			$_COOKIE = array_map('undo_magic_quotes', $_COOKIE);
+		}
+		
+		return true;
 	}
 }
 
