@@ -12,7 +12,7 @@ if ( !isset($this) ) { exit('direct_acces_not_allowed'); }
 if ( !file_exists($core->path . '_modules/database/config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
 
 $settings = array(
-					'load_hook' 	=> 2,
+					'load_hook' 	=> 1,
 					'unload_hook' 	=> 9
 				);
 				
@@ -25,16 +25,11 @@ switch ($mode)
 				// include the config 
 				include $core->path . '_modules/database/config.php';
 				
-				// include the class file
-				if ( file_exists($core->path . 'structure/' . $db_type . '.php') )
-				{
-					include $core->path . 'structure/' . $db_type . '.php';
-				}
-				
-				// 'boot' the class
-				// calling class like this requires php 5.2 alternative you could rename all database structure classes to
-				// db, and set here new db (...);
-				$this->db = new $db_type($this, $host, $user, $password, $database);
+				// include the class 
+				include $core->path . '_modules/database/mysql.php';
+								
+				# boot class
+				$this->db = new mysql($this, $host, $user, $password, $database);
 		break;
 	
 	// end of database connection
