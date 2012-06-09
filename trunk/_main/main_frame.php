@@ -13,7 +13,7 @@ final class core
 {
 	public
 		$path,
-		$modules				= array()
+		$unload_modules			= array()
 		;
 		
 	private
@@ -48,6 +48,9 @@ final class core
 	{
 		$modules = (!is_array($modules)) ? array($modules) : $modules;
 	
+		# referentie
+		$core = $this;
+			
 		foreach ( $modules as $module )
 		{
 			# check if the module exist & valid
@@ -60,11 +63,10 @@ final class core
 			{
 				$core = $this;
 				include ( $this->path . '_modules/' . $module . '/boot.php' );
-				$this->modules[] = array(
+				$need_to_loads[] = array(
 						'module_name' 	=> $module,
-						'module_type'	=> 'user',
-						'module_load'	=> (isset($settings['load_hook'])? $settings['load_hook'] : ''),
-						'module_unload'	=> (isset($settings['unload_hook'])? $settings['unload_hook'] : '') 
+						'module_load'	=> (isset($settings['load_hook'])? $settings['load_hook'] : '999'),
+						'module_unload'	=> (isset($settings['unload_hook'])? $settings['unload_hook'] : '999') 
 						);
 			}
 			else
@@ -72,8 +74,19 @@ final class core
 				die('Unknown module requested : '. $module);
 			}
 		}
+				
+		foreach ($need_to_loads as $key => $value)
+		{
+			$module_load[$value['module_load']] = $value['module_name'];
+			$this->unload_modules[$value['module_unload']] = $value['module_name'];
+		}
 		
-		print_r($this->modules);
+		ksort($module_load, SORT_NUMERIC);
+		
+		foreach ($module_load as $k => $load_module)
+		{
+			$this->module_handeling ( $load_module, 'construct' );
+		}
 	}
 	
 	/**
@@ -85,12 +98,12 @@ final class core
 		# referentie
 		$core = $this;
 		
-		# unload all modules who are loaded
-		foreach ( $this->loaded_modules as $module )
+		ksort($this->unload_modules, SORT_NUMERIC);
+		
+		foreach ($this->unload_modules as $k => $unload_module)
 		{
-			$this->module_handeling ( $module, 'destruct' );
+			$this->module_handeling ( $unload_module, 'destruct' );
 		}
-
 	}
 
 	/**
@@ -191,5 +204,3 @@ final class core
 		return true;
 	}
 }
-
-?>

@@ -14,7 +14,7 @@ final class session
 	public
 			$core,
 			$id,
-			$lifeTime = 86400, # 1 houre
+			$lifeTime = 86400 # 1 houre
 			;
 			
 	private 

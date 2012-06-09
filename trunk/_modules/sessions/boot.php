@@ -8,6 +8,13 @@
 // no direct acces
 if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
+$settings = array(
+					'load_hook' 	=> 2,
+					'unload_hook' 	=> 8
+				);
+				
+$mode = (isset($mode)) ? $mode : '';
+
 switch ($mode)
 {
 	// start the module
