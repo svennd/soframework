@@ -10,7 +10,7 @@ if ( !isset($this) ){ exit('direct_acces_not_allowed'); }
 
 $settings = array(
 					'load_hook' 	=> 2,
-					'unload_hook' 	=> 8
+					'unload_hook' 	=> 1
 				);
 				
 $mode = (isset($mode)) ? $mode : '';

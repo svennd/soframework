@@ -58,7 +58,7 @@ final class session
 			if ( $r = $core->db->result )
 			{
 				# extract saved data from table
-				$this->contents = unserialize($r['contents']);
+				$this->contents = unserialize($r['0']['contents']);
 				
 				if ( !is_array($this->contents) ) 
 				{

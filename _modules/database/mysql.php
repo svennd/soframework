@@ -142,7 +142,7 @@ final class mysql
 				{
 					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
 				}
-
+				
 				return $this->result;
 			}
 			# delete, insert, (...) geven een bool/int terug
@@ -151,9 +151,6 @@ final class mysql
 				# insert : return insert id
 				# insert/update : rows adapted
 				$this->result = (preg_match('/^INSERT/i', $query)) ? mysql_insert_id() : mysql_affected_rows();
-			
-				# clean up the request
-				mysql_free_result( $result );
 				
 				return $this->result;
 			}
