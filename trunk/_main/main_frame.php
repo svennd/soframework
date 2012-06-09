@@ -117,33 +117,17 @@ final class core
 	* @param string $file
 	* @param string $mode
 	*/
-	private function module_handeling( $module, $mode, $is_core = false )
+	private function module_handeling( $module, $mode )
 	{
-		if ( $is_core )
+		if ( is_file($this->path . '_modules/' . $module . '/boot.php') )
 		{
-			if ( is_file($this->path . '_main/core/' . $module . '/boot.php') )
-			{
-				$core = $this;
-				$module_path = $this->path . '_main/core/' . $module . '/';
-				include($module_path . 'boot.php');
-			}
-			else
-			{
-				$this->log('unknown core module loaded : ' . $module , 'error_log');
-			}
+			$core = $this;
+			$module_path = $this->path . '_modules/' . $module . '/';
+			include($module_path . 'boot.php');
 		}
 		else
 		{
-			if ( is_file($this->path . '_modules/' . $module . '/boot.php') )
-			{
-				$core = $this;
-				$module_path = $this->path . '_modules/' . $module . '/';
-				include($module_path . 'boot.php');
-			}
-			else
-			{
-				$this->log('unknown module loaded : ' . $module , 'error_log');
-			}
+			die('unknown core module loaded : ' . $module);
 		}
 	}
 		
@@ -164,7 +148,9 @@ final class core
 			{
 				$this->_page->{$k} = $v;
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	/**
