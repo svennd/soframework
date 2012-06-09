@@ -9,7 +9,7 @@
 if ( !isset($this) ) { exit('direct_acces_not_allowed'); }
 
 // check if we got a config file
-if ( !file_exists($module_path . 'config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
+if ( !file_exists($core->path . '_modules/database/config.php') ){ exit('Please fill _main/core/database/config.default.php and rename to config.php'); }
 
 $settings = array(
 					'load_hook' 	=> 2,
@@ -23,12 +23,12 @@ switch ($mode)
 	case "construct" :
 		
 				// include the config 
-				include $module_path . 'config.php';
+				include $core->path . '_modules/database/config.php';
 				
 				// include the class file
-				if ( file_exists($module_path . 'structure/' . $db_type . '.php') )
+				if ( file_exists($core->path . 'structure/' . $db_type . '.php') )
 				{
-					include $module_path . 'structure/' . $db_type . '.php';
+					include $core->path . 'structure/' . $db_type . '.php';
 				}
 				
 				// 'boot' the class
