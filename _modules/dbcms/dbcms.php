@@ -43,7 +43,7 @@ final class dbcms
 	{
 		if ( !isset($this->core->db->db_ready) || $this->core->db->db_ready == false )
 		{
-			$this->core->log ('db was not ready or not enabled while trying to use dbcms module.', 'module_log');
+			die ('db was not ready or not enabled while trying to use dbcms module.');
 		}
 		return true;
 	}

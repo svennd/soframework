@@ -12,18 +12,19 @@
 final class core
 {
 	public
-		$path,
-		$module_unload_sequence	= array()
+		$path 					= '',
+		$module_unload_sequence	= array(),
+		$page_info		
 		;
 
 	/**
 	* initialize
 	* @param array
 	*/
-	function __construct($path = "", $page_info = array())
+	function __construct($page_info = array())
 	{
 		# save execution path
-		$this->path = $path;
+		$this->path = (isset($page_info['path'])) ? $page_info['path']: '';
 		
 		# check if no hard exit file has been set
 		$this->check_access();
@@ -33,7 +34,6 @@ final class core
 			
 		# parse page info
 		$this->handle_page_info($page_info);
-		
 	}
 	
 	/**
@@ -126,7 +126,26 @@ final class core
 			$this->module_handeling ( $unload_module, 'destruct' );
 		}
 	}
-
+	
+	/**
+	* handle page info array
+	* @param array $page_info
+	* function is able to fail if nothing is given
+	*/
+	public function handle_page_info ($page_info)
+	{
+		# save page info
+		if ( is_array($page_info) && !empty($page_info) )
+		{
+			$page_info 				= new stdClass();
+		
+			# put all info in the new class page
+			foreach ( $page_info as $k => $v )
+			{
+				$this->page_info->{$k} = $v;
+			}
+		}
+	}
 	/**
 	* check if script can continue
 	*/
@@ -159,28 +178,7 @@ final class core
 			die('unknown core module loaded : ' . $module);
 		}
 	}
-		
-	/**
-	* handle page info array
-	* @param array $page_info
-	* function is able to fail if nothing is given
-	*/
-	private function handle_page_info ($page_info)
-	{
-		# save page info
-		if ( is_array($page_info) && !empty($page_info) )
-		{
-			# php 5 want all objects declared
-			$this->_page = new stdClass();
 			
-			# put all info in the new class _page
-			foreach ( $page_info as $k => $v )
-			{
-				$this->_page->{$k} = $v;
-			}
-		}
-	}
-	
 	/**
 	* load core 
 	*/	

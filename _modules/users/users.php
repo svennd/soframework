@@ -91,7 +91,7 @@ final class user
 				{
 					if ( !$this->core->user->login ($user, $password) )
 					{
-						$core->log ('user plugin : new user could not login : ' . htmlspecialchars( $user ), 'error_log');
+						die('user plugin : new user could not login : ' . htmlspecialchars( $user ));
 						return false;
 					}
 				}
