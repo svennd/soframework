@@ -151,7 +151,7 @@ final class session
 		}
 		else
 		{
-			$core->log('session plugin : header already send, could not make cookie.', 'error_log');
+			die('session plugin : header already send, could not make cookie.');
 		}
 	}
 }

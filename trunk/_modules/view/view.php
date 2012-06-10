@@ -27,8 +27,11 @@ final class view
 	*/
 	function __construct($core)
 	{
-		// reference to the core object
+		# reference to the core object
 		$this->core = $core;
+		
+		# set page info to template
+		$this->set( 'page_info', $this->core->page_info);
 	}
 	
 	/**
