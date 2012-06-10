@@ -5,4 +5,3 @@
 		<title><?php if (isset($page_info->title)) {print_r($page_info->title);} else {echo 'Geen Titel ? :)';}  ?></title>
 	</head>
 	<body>
-	

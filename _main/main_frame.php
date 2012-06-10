@@ -13,8 +13,7 @@ final class core
 {
 	public
 		$path 					= '',
-		$module_unload_sequence	= array(),
-		$page_info		
+		$module_unload_sequence	= array()
 		;
 
 	/**
@@ -134,11 +133,11 @@ final class core
 	*/
 	public function handle_page_info ($page_info)
 	{
+		$this->page_info 	= new stdClass();
+	
 		# save page info
 		if ( is_array($page_info) && !empty($page_info) )
 		{
-			$page_info 				= new stdClass();
-		
 			# put all info in the new class page
 			foreach ( $page_info as $k => $v )
 			{
