@@ -131,15 +131,15 @@ final class core
 	* @param array $page_info
 	* function is able to fail if nothing is given
 	*/
-	public function handle_page_info ($page_info)
+	public function handle_page_info ($page_info_import)
 	{
 		$this->page_info 	= new stdClass();
 	
 		# save page info
-		if ( is_array($page_info) && !empty($page_info) )
+		if ( is_array($page_info_import) && !empty($page_info_import) )
 		{
 			# put all info in the new class page
-			foreach ( $page_info as $k => $v )
+			foreach ( $page_info_import as $k => $v )
 			{
 				$this->page_info->{$k} = $v;
 			}
