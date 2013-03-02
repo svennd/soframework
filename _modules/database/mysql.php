@@ -86,7 +86,7 @@ final class mysql
 	* @param int $lijn
 	* @param string result type
 	*/	
-	public function sql ($query, $file = 'unkown', $lijn = 'unknown', $method = 'ASSOC')
+	public function sql ($query, $file = 'unkown', $lijn = 'unknown', $method = 'BOTH')
 	{		
 		# send the query
 		$result = mysql_query($query) or die('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error() . ' could not execute query, ' . htmlspecialchars($query));

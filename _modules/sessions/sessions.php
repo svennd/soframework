@@ -53,12 +53,12 @@ final class session
 		if ( $this->id )
 		{
 			# get info from table
-			$core->db->sql('SELECT `contents` FROM `user_sessions` WHERE `id` = ' . $this->id . ' AND `hash` = "' . $this->hash . '" LIMIT 1;', __FILE__, __LINE__);
+			$core->db->sql('SELECT `contents` FROM `user_sessions` WHERE `id` = ' . $this->id . ' AND `hash` = "' . $this->hash . '" LIMIT 0,1;', __FILE__, __LINE__);
 
 			if ( $r = $core->db->result )
 			{
 				# extract saved data from table
-				$this->contents = unserialize($r['0']['contents']);
+				$this->contents = unserialize($r['contents']);
 				
 				if ( !is_array($this->contents) ) 
 				{
