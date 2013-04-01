@@ -18,7 +18,8 @@ final class view
 		;
 	
 	private
-		$page
+		$page,
+		$local_path = '_modules/view/_view/'
 		;
 	
 	/**
@@ -77,9 +78,9 @@ final class view
 		# load all the pages and output them
 		foreach ( $this->file_list as $file )
 		{
-			if(file_exists($this->core->path . "_modules/view/_view/" . $file . ".tpl"))
+			if(file_exists($this->core->path . $this->local_path . $file . ".tpl"))
 			{
-				include($this->core->path . "_modules/view/_view/" . $file . ".tpl");
+				include($this->core->path . $this->local_path . $file . ".tpl");
 			}
 			else
 			{
