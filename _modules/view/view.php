@@ -19,7 +19,7 @@ final class view
 	
 	private
 		$page,
-		$local_path = '_modules/view/_view/'
+		$local_path = '_modules/view/_view/' # default, change in main config!
 		;
 	
 	/**
@@ -30,6 +30,12 @@ final class view
 	{
 		# reference to the core object
 		$this->core = $core;
+		
+		# change location of view_location
+		if (isset($this->core->view_location))
+		{
+			$this->local_path = $this->core->view_location;
+		}
 		
 		# set page info to template
 		$this->set( 'page_info', $this->core->page_info);
@@ -81,6 +87,10 @@ final class view
 			if(file_exists($this->core->path . $this->local_path . $file . ".tpl"))
 			{
 				include($this->core->path . $this->local_path . $file . ".tpl");
+			}
+			elseif (file_exists($this->core->path . $this->local_path . $file . ".html"))
+			{
+				include($this->core->path . $this->local_path . $file . ".html");
 			}
 			else
 			{
