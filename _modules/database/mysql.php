@@ -53,14 +53,14 @@ final class mysql
 	private function connect($host, $user, $password, $db )
 	{
 		// mysql connection
-		$this->db_link = mysql_connect($host, $user, $password) or die('DB error : ' . mysql_errno() . mysql_error());
+		$this->db_link = mysql_connect($host, $user, $password) or die('DB error : ' . mysql_errno() . ' ' . mysql_error());
 		if (!$this->db_link)
 		{
 			return $this->result = false;
 		}
 		
 		// database selection
-		$db_selected = mysql_select_db($db, $this->db_link) or die('DB error : ' . mysql_errno() . mysql_error());
+		$db_selected = mysql_select_db($db, $this->db_link) or die('DB error : ' . mysql_errno() . ' ' . mysql_error());
 		if (!$db_selected)
 		{
 			return $this->result = false;
@@ -89,7 +89,7 @@ final class mysql
 	public function sql ($query, $file = 'unkown', $lijn = 'unknown', $method = 'BOTH')
 	{		
 		# send the query
-		$result = mysql_query($query) or die('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . mysql_error() . ' could not execute query, ' . htmlspecialchars($query));
+		$result = mysql_query($query) or die('DB error : (' . $lijn . ', ' . $file . ') ' . mysql_errno() . ' ' . mysql_error() . ' could not execute query, ' . htmlspecialchars($query));
 				
 		# dit verwijderd meerdere spaties en vervangt door 1
 		# vb : sql('     SELECT     *  FROM   table ... --> sql(' SELECT * FROM table
