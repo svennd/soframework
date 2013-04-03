@@ -40,10 +40,15 @@ final class cms
 	/*
 	*
 	*/
-	public function edit_file ( $old_content, $new_content, $file ) 
+	public function edit_file ( $key, $new_content, $file ) 
 	{
 		# if load_file fails check if this also fails
-		if ($full_content = $this->load_file($file)) {}
+		if (!$full_content = $this->load_file($file)) { die ('wrong file'); }
+		
+		# <!-- begin:header -->
+		# <!-- end:header -->
+		preg_replace ('<!--\sbegin:' . $key . '\s-->(.*?)<!--\send:' . $key . '\s-->', '<!--\sbegin:' . $key . '\s-->' . $new_content . '<!--\send:' . $key . '\s-->', $full_content);
+		
 	}
 	
 	public function load_backup ()
@@ -52,7 +57,7 @@ final class cms
 		# load backup
 	}
 	
-		/*
+	/*
 	*
 	*/
 	private function load_file ($file)
