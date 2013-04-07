@@ -1,4 +1,1 @@
-<h3>SoFramework</h3>
-<p>
-	Our basic framework :)
-</p>
+<!-- edit:true --><h3>SoFramework</h3><p><!-- begin:header -->test inhouddedezd&edddeede<!-- end:header --></p>
