@@ -40,8 +40,12 @@ final class cms
 	}
 	
 	/*
-	*
+	* edit the file
+	* @param array $key
+	* @param array $new_content
+	* @param string file
 	*/
+	# need to make multiple keys possible
 	public function edit_file ( $key, $new_content, $file ) 
 	{
 		# if load_file fails check if this also fails
@@ -87,6 +91,11 @@ final class cms
 		}
 	}
 	
+	/*
+	* load backup from past
+	* @param string $file
+	* @param string $timestamp
+	*/
 	public function load_backup ($file, $timestamp)
 	{
 		# backup current
@@ -116,7 +125,8 @@ final class cms
 	}
 	
 	/*
-	*
+	* load file
+	* @param string $file
 	*/
 	private function load_file ($file)
 	{
@@ -140,7 +150,9 @@ final class cms
 	}
 	
 	/*
-	*
+	* backup before doing anything!
+	* @param string $file
+	* @param mixed $content - original content
 	*/
 	private function backup ($file, $content)
 	{
