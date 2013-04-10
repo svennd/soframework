@@ -125,6 +125,30 @@ final class cms
 	}
 	
 	/*
+	* lock the file so it cannot be editted
+	*
+	*/
+	public function lock ($file)
+	{
+		# backup current
+		if ($this->backup($file, $this->load_file($file)))
+		{
+			die('cannot create backup of current file.');
+		}
+		
+		# 
+		$fh_content = fopen ($this->core->path . $this->local_path . $file, "wb+");
+		
+		# overwrite file
+		fwrite($fh_content, preg_replace ('<!--\sedit:true\s-->/s', '', load_file($file)));
+
+		# and close file
+		fclose($fh_content);
+		
+		return true;
+	}
+	
+	/*
 	* load file
 	* @param string $file
 	*/
