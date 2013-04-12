@@ -99,7 +99,7 @@ final class cms
 	public function load_backup ($file, $timestamp)
 	{
 		# backup current
-		if ($this->backup($file, $this->load_file($file)))
+		if (!$this->backup($file, $this->load_file($file)))
 		{
 			die('cannot create backup of current file.');
 		}
@@ -131,16 +131,48 @@ final class cms
 	public function lock ($file)
 	{
 		# backup current
-		if ($this->backup($file, $this->load_file($file)))
+		if (!$this->backup($file, $this->load_file($file)))
 		{
 			die('cannot create backup of current file.');
 		}
 		
-		# 
-		$fh_content = fopen ($this->core->path . $this->local_path . $file, "wb+");
+		# content
+		$content = $this->load_file($file);
 		
+		# note : once a file is open you can't file_get_contents it anymore
+		$fh_content = fopen ($this->core->path . $this->local_path . $file, "wb+");
+				
 		# overwrite file
-		fwrite($fh_content, preg_replace ('<!--\sedit:true\s-->/s', '', load_file($file)));
+		fwrite($fh_content, preg_replace ('/<!--\sedit:true\s-->/s', '<!-- edit:false -->', $content));
+
+		# and close file
+		fclose($fh_content);
+		
+		return true;
+	}
+	
+	public function unlock ($file)
+	{	
+		# content
+		# check if file exists; check if valid extension
+		if (!file_exists($this->core->path . $this->local_path . $file) ||  !in_array(pathinfo($this->core->path . $this->local_path . $file, PATHINFO_EXTENSION), $this->edit_file_types))
+		{
+			die('requested non existing file, or wrong type');
+		}
+
+		$content = file_get_contents ($this->core->path . $this->local_path . $file);
+		
+		# backup current
+		if (!$this->backup($file, $content))
+		{
+			die('cannot create backup of current file.');
+		}
+		
+		# note : once a file is open you can't file_get_contents it anymore
+		$fh_content = fopen ($this->core->path . $this->local_path . $file, "wb+");
+				
+		# overwrite file
+		fwrite($fh_content, preg_replace ('/<!--\sedit:false\s-->/s', '<!-- edit:true -->', $content));
 
 		# and close file
 		fclose($fh_content);
@@ -181,10 +213,11 @@ final class cms
 	private function backup ($file, $content)
 	{
 		# create current backup
-		if (!file_exists($this->core->path . $this->local_path . $file)) {
+		if (!file_exists($this->core->path . $this->local_path . $file))
+		{
 			return false;
 		}
-				
+
 		# open for writing
 		$fh_backup = fopen ($this->core->path . $this->bck_dir . $file . "." . time() . ".bck", "wb+");
 		
