@@ -71,7 +71,7 @@ final class view
 	}
 	
 	/**
-	* no buffer used, include files
+	* run the page
 	*/
 	private function load_full_page () 
 	{
@@ -105,8 +105,7 @@ final class view
 	*/
 	public function push_output ()
 	{
-		# remove additional html content if possible
-		return ( !empty($this->page) ) ? preg_replace( '/<!--(.+?)-->/', '', $this->page) : $this->load_full_page();
+		return $this->load_full_page();
 	}
 }
 
