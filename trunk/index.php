@@ -8,16 +8,14 @@ $core = new core(
 				);
 
 # load modules
-$core->load_modules(array('database', 'log', 'sessions', 'users', 'view', 'cms'));
+$core->load_modules(array('view'));
 
+# yet to give examples :
+# 'database', 'log', 'sessions', 'users'
 
-$core->cms->edit_file('header', 'test inhoud
-
-
-	dedezd&			ed	d
-	
-	deede', 'index.tpl');
-
+# already done :
+# 'cms'
+ 
 # output for the header
 $core->view->use_page('header');
 
