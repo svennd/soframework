@@ -16,7 +16,7 @@ final class cms
 		;
 		
 	private
-		$local_path 		= '_modules/view/_view/', # default, change in main config!
+		$local_path 		= 'public/', # default, change in main config!
 		$bck_dir			= '_modules/cms/_bck/',
 		$edit_file_types 	= array('tpl', 'html'),
 		$compress			= true
