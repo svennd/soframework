@@ -185,24 +185,19 @@ final class core
 	{
 		$core_modules = array();
 		
-		# add global config file
+		# read global config file
 		if ( is_file($this->path . '_main/_config.php') )
 		{
 			include($this->path . '_main/_config.php');
-		}
-		else
-		{
-			# clearly something is not right
-			die('Main config file could not be located.');
-		}
-		
-		# main config array
-		if ( isset($config) && is_array($config) )
-		{
-			# put in as vars in frame
-			foreach ( $config as $k => $v )
+
+			# main config array
+			if ( isset($config) && is_array($config) )
 			{
-				$this->{$k} = $v;
+				# put in as vars in frame
+				foreach ( $config as $k => $v )
+				{
+					$this->{$k} = $v;
+				}
 			}
 		}
 		
