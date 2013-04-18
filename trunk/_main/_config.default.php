@@ -6,8 +6,21 @@
 */
 
 # main config variable
+# all variabels here are optional, they have defaults set in there class files;
+# but they might be overriden by custom installation; It is proper to set this here;
+# though you are free to addapt the class aswell, this location however will have higher priority
+
+# database config is located seperatly for security reasons see : _modules/database/config.php
 $config = array (
-					// 'view_location' => 'public/', # view files location
-					// 'cms_location' => 'public/', # editable file locations
-					// 'cms_compress' => true, # on editing it will remove \t\n\r from files
+					# view files location
+					// 'view_location' => 'public/', 
+					
+					# editable file locations
+					// 'cms_location' => 'public/', 
+					
+					 # on editing it will remove \t\n\r from files
+					// 'cms_compress' => true,
+					
+					# cms can unlock files (default:false, for safety)
+					// 'cms_can_unlock' => true
 				);

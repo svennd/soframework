@@ -25,24 +25,27 @@ final class mysql
 	* @param string $db_u_pass user password
 	* @param string $db_name database name
 	*/
-	function __construct($core, $db_host, $db_u_name, $db_u_pass, $db_name)
+	function __construct($core)
 	{
 		// reference to the core object
 		$this->core = $core;
 
+		// include the config 
+		include $core->path . '_modules/database/config.php';
+
 		// connection
 		if ( ! $this->db_ready = $this->connect(
-											$db_host,
-											$db_u_name,
-											$db_u_pass,
-											$db_name
+											$host,
+											$user,
+											$password,
+											$database
 										))
 		{
 			// no connection
 			die('DB error : cannot connect, ' . mysql_errno() . mysql_error());
 		}	
 	}
-	
+		
 	/**
 	* connect to the database
 	* @param string $host database host
@@ -50,7 +53,7 @@ final class mysql
 	* @param string $password user password
 	* @param string $db database name
 	*/
-	private function connect($host, $user, $password, $db )
+	public function connect($host, $user, $password, $db )
 	{
 		// mysql connection
 		$this->db_link = mysql_connect($host, $user, $password) or die('DB error : ' . mysql_errno() . ' ' . mysql_error());
@@ -111,7 +114,7 @@ final class mysql
 				# but we reached this point anyway.
 				$this->result = array();
 				
-				# read out the results using the defined result type
+				# result will be array(0 => value, field => value, 1 => value, field => value, 2 => value, field => value);
 				if ($method == "BOTH")
 				{
 					while ( $d = mysql_fetch_array($result, MYSQL_BOTH) )
@@ -119,6 +122,7 @@ final class mysql
 						$this->result[] = $d;
 					}
 				}
+				# result will be array(0 => value, 1 => value, 2 => value);
 				else if ($method == "NUM")
 				{
 					while ( $d = mysql_fetch_array($result, MYSQL_NUM) )
@@ -126,6 +130,7 @@ final class mysql
 						$this->result[] = $d;
 					}
 				}
+				# result will be (field => value, field => value, field => value);
 				else
 				{
 					while ( $d = mysql_fetch_array($result, MYSQL_ASSOC) )

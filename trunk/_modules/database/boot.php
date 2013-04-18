@@ -21,15 +21,12 @@ switch ($mode)
 {	
 	// start the module
 	case "construct" :
-		
-				// include the config 
-				include $core->path . '_modules/database/config.php';
-				
+						
 				// include the class 
 				include $core->path . '_modules/database/mysql.php';
 								
 				# boot class
-				$this->db = new mysql($this, $host, $user, $password, $database);
+				$this->db = new mysql($this);
 		break;
 	
 	// end of database connection
