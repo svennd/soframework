@@ -16,10 +16,11 @@ final class cms
 		;
 		
 	private
-		$local_path 		= 'public/', # default, change in main config!
-		$bck_dir			= '_modules/cms/_bck/',
-		$edit_file_types 	= array('tpl', 'html'),
-		$compress			= true
+		$local_path 		= 'public/', 			# edit directory (this could be anywhere you place your files)
+		$bck_dir			= '_modules/cms/_bck/',	# backup directory
+		$edit_file_types 	= array('tpl', 'html'),	# don't wanne edit php files ever !
+		$compress			= true,					# remove /r /n from code, every bit saves !
+		$can_unlock			= false					# default we can't "unlock" 
 		;
 	
 	/**
@@ -35,7 +36,10 @@ final class cms
 		$this->local_path = (isset($this->core->cms_location)) ? $this->core->cms_location : $this->local_path;
 		
 		# check compression
-		$this->compress = (isset($this->core->cms_compress)) ? $this->core->cms_compress : $this->compress ;
+		$this->compress = (isset($this->core->cms_compress)) ? $this->core->cms_compress : $this->compress;
+		
+		# check if we can unlock or not
+		$this->can_unlock = (isset($this->core->cms_can_unlock)) ? $this->core->cms_can_unlock : $this->can_unlock;
 		
 	}
 	
@@ -126,7 +130,7 @@ final class cms
 	
 	/*
 	* lock the file so it cannot be editted
-	*
+	* @param string $file
 	*/
 	public function lock ($file)
 	{
@@ -151,8 +155,15 @@ final class cms
 		return true;
 	}
 	
+	/*
+	* unlock the file, this is a bit of a brute force way; might also not be the savest way
+	*
+	*/
 	public function unlock ($file)
 	{	
+		# this needs to be set for safety purpose
+		if (!$this->can_unlock) {die('cannot unlock');}
+		
 		# content
 		# check if file exists; check if valid extension
 		if (!file_exists($this->core->path . $this->local_path . $file) ||  !in_array(pathinfo($this->core->path . $this->local_path . $file, PATHINFO_EXTENSION), $this->edit_file_types))
