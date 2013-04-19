@@ -6,6 +6,22 @@
 */
 
 /**
+CREATE TABLE IF NOT EXISTS `user_data` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) DEFAULT NULL,
+  `pass_hash` varchar(255) DEFAULT NULL,
+  `level` tinyint(1) DEFAULT NULL,
+  `email` varchar(40) DEFAULT NULL,
+  `reg_date` datetime DEFAULT NULL,
+  `edit_date` datetime DEFAULT NULL,
+  `last_login_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+*/
+
+/**
 * user class
 * @abstract
 */
