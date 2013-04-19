@@ -29,7 +29,7 @@ final class cms
 	*/
 	function __construct($core)
 	{
-		// reference to the core object
+		# reference to the core object
 		$this->core = $core;
 		
 		# change location of cms_location

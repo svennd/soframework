@@ -11,7 +11,7 @@
 */
 final class user
 {
-	#	Levels :
+	#	Levels (example) :
 	#	banned = -1, guest = 0, user = 1, moderator = 2, admin = 3, developer = 4
 	
 	public
@@ -43,6 +43,9 @@ final class user
 										'user_level'    => 0
 										));
 		}
+		
+		# if a core salt is set use that. (recommended)
+		$this->salt = (isset($this->core->user_salt)) ? $this->core->user_salt : $this->salt;
 	}
 	
 	/**
@@ -172,6 +175,15 @@ final class user
 	{
 		return ( $this->core->session->get('user_level') >= $level ) ? true : false;
 	}
+
+	/**
+	* is the user banned
+	* @return bool
+	*/
+	public function is_banned($level)
+	{
+		return ( $this->core->session->get('user_level') == -1 ) ? true : false;
+	}
 	
 	/**
 	* get user id
@@ -211,7 +223,7 @@ final class user
 		# this is just an attempt on making password stronger
 		# it would be nice if $this->salt (set at beginning of this file)
 		# is set to another value
-		# optionally we can use user->set_salt('my_extra_salt')
+		# optionally we can use user->set_salt('my_extra_salt') on a per-user base
 		return hash('sha256', $this->salt . strtolower($user) . $password);
 	}
 }

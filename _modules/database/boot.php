@@ -24,7 +24,7 @@ switch ($mode)
 						
 				// include the class 
 				include $core->path . '_modules/database/mysql.php';
-								
+				
 				# boot class
 				$this->db = new mysql($this);
 		break;
