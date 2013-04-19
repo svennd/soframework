@@ -6,6 +6,18 @@
 */
 
 /**
+CREATE TABLE IF NOT EXISTS `user_sessions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `hash` varchar(40) NOT NULL DEFAULT '',
+  `contents` text NOT NULL,
+  `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_expire` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hash` (`hash`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+*/
+
+/**
 * session class
 * @abstract
 */
@@ -30,6 +42,9 @@ final class session
 	{
 		# ref
 		$this->core = $core;
+		
+		# check needs
+		$this->check_basic_needs();
 	
 		# fetch browser info
 		$userIP = !empty($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'] );
@@ -97,12 +112,21 @@ final class session
 		}
 	}
 	
+	private function check_basic_needs()
+	{
+		if ( !isset($this->core->db->db_ready) || $this->core->db->db_ready == false )
+		{
+			die ('db was not ready or not enabled while trying to use session module.');
+		}
+		return true;
+	}
+	
 	/**
 	* get an item from session
 	* @param string $k
 	* @param bool $default
 	*/
-	function get($k, $default = FALSE)
+	public function get($k, $default = FALSE)
 	{
 		return isset($this->contents[$k]) ? $this->contents[$k] : $default;
 	}
@@ -112,7 +136,7 @@ final class session
 	* @param string $k
 	* @param bool $default
 	*/
-	function put($k, $v = FALSE)
+	public function put($k, $v = FALSE)
 	{
 		if ( is_array($k) )
 		{
@@ -130,7 +154,7 @@ final class session
 	/**
 	* clean content
 	*/
-	function reset()
+	public function reset()
 	{
 		$this->contents = array();
 	}
@@ -138,7 +162,7 @@ final class session
 	/**
 	* safe to database
 	*/
-	function end()
+	public function end()
 	{
 		# update database
 		$this->core->db->sql('UPDATE `user_sessions` SET `contents` = "' . $this->core->db->esc(serialize($this->contents)) . '", `date_expire` = DATE_ADD(NOW(), INTERVAL ' . ( int ) $this->lifeTime . ' SECOND) WHERE `id` = ' . $this->id . ' LIMIT 1 ;',__FILE__, __LINE__);

@@ -32,10 +32,7 @@ final class view
 		$this->core = $core;
 		
 		# change location of view_location
-		if (isset($this->core->view_location))
-		{
-			$this->local_path = $this->core->view_location;
-		}
+		$this->local_path = (isset($this->core->view_location) ? $this->core->view_location : $this->local_path;
 		
 		# set page info to template
 		$this->set( 'page_info', $this->core->page_info);

@@ -26,7 +26,7 @@ final class filehandler
 		$this->core = $core;
 	}
 	
-	function read_directory($subdir = '')
+	public function read_directory($subdir = '')
 	{
 		# check existance
 		if (!is_dir($this->core->path . $this->dir . $subdir))
@@ -45,15 +45,15 @@ final class filehandler
 		}
 	}
 	
-	function create_new_file() 
+	public function create_new_file() 
 	{
 	}
 	
-	function delete_file()
+	public function delete_file()
 	{
 	}
 	
-	function edit_file()
+	public function edit_file()
 	{
 	}
 	
@@ -61,7 +61,7 @@ final class filehandler
 	* destructor
 	*
 	*/
-	function end()
+	public function end()
 	{
 	}
 }

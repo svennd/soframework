@@ -22,6 +22,4 @@ switch ($mode)
 		break;
 }
 
-
-// note : this module will overwrite the file based cms when used both. (they cannot be used both)
 ?>

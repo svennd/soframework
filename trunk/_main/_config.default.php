@@ -22,5 +22,11 @@ $config = array (
 					// 'cms_compress' => true,
 					
 					# cms can unlock files (default:false, for safety)
-					// 'cms_can_unlock' => true
+					// 'cms_can_unlock' => true,
+					
+					# user module : set salt for pasword generation
+					// 'user_salt' => 'Cs_8.s3-',
+					
+					# log module : location for saving log files
+					// 'log_path' => '_main/',
 				);

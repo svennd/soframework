@@ -64,21 +64,19 @@ final class dbcms
 	*/
 	public function add_page ( $name, $content )
 	{
-		// cutting name if longer then 255
-		if ( strlen($name) > 255 )
-		{
-			$name = substr($name, 0, 254);
-		}
+		# cutting name if longer then 255
+		$name = ( strlen($name) > 255 ) ? substr($name, 0, 254) : $name;
+		
+		# save it 
 		return $this->core->db->sql("INSERT INTO `dbcms` (name, content) VALUES ('" . $this->core->db->esc($name) . "', '" . $this->core->db->esc($content) . "');", __FILE__, __LINE__);
 	}
 	
 	public function edit_page ( $id, $name, $content )
 	{
-		// cutting name if longer then 255
-		if ( strlen($name) > 255 )
-		{
-			$name = substr($name, 0, 254);
-		}
+		# cutting name if longer then 255
+		$name = ( strlen($name) > 255 ) ? substr($name, 0, 254) : $name;
+		
+		# save it
 		return $this->core->db->sql("UPDATE `dbcms` SET `name` = '" . $this->core->db->esc($name) . "',`content` = '" . $this->core->db->esc($content) . "' WHERE `id` = '" . $id . "' LIMIT 1;", __FILE__, __LINE__);
 	}
 }

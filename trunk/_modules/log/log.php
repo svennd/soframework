@@ -14,6 +14,10 @@ final class log
 	public 
 		$core
 		;
+		
+	private 
+		$log_path = '_main/'
+		;
 	
 	/**
 	* initialize
@@ -23,6 +27,10 @@ final class log
 	{
 		// reference to the core object
 		$this->core = $core;
+		
+		# location for log files
+		$this->log_path = (isset($this->core->log_path) ? $this->core->log_path : $this->log_path;
+		
 	}
 	
 	/**
@@ -30,7 +38,7 @@ final class log
 	* @param string $msg
 	* @param string $file
 	*/
-	function log($msg, $file = 'admin_log')
+	public function log($msg, $file = 'admin_log')
 	{
 		# since we write this to file & screen
 		$msg = htmlentities($msg);
@@ -41,7 +49,7 @@ final class log
 			echo $msg . '<br/>';
 		}
 		
-		$log_file = $this->path . 'main/_temp/_logs/' . $file . '.log';
+		$log_file = $this->core->path . $this->log_path . $file . '.log';
 			
 		if ( is_writable($log_file) )
 		{
