@@ -132,7 +132,7 @@ final class cms
 	* lock the file so it cannot be editted
 	* @param string $file
 	*/
-	public function lock ($file)
+	public function lock ($file, $final = false)
 	{
 		# backup current
 		if (!$this->backup($file, $this->load_file($file)))
@@ -145,10 +145,26 @@ final class cms
 		
 		# note : once a file is open you can't file_get_contents it anymore
 		$fh_content = fopen ($this->core->path . $this->local_path . $file, "wb+");
-				
-		# overwrite file
-		fwrite($fh_content, preg_replace ('/<!--\sedit:true\s-->/s', '<!-- edit:false -->', $content));
-
+		
+		# remove line feeds for code (important since it might be finilized here)
+		if ($this->compress)
+		{
+			$content = preg_replace('/\t/', '', $content);
+			$content = preg_replace('/\n/', '', $content);
+			$content = preg_replace('/\r/', '', $content);
+		}
+		
+		# if final we can remove all tags
+		if ($final)
+		{
+			fwrite($fh_content, preg_replace ('/<!--(.*?)-->/s', '', $content));
+		}
+		# if not final we can set the edit value to false
+		else 
+		{
+			fwrite($fh_content, preg_replace ('/<!--\sedit:true\s-->/s', '<!-- edit:false -->', $content));
+		}
+		
 		# and close file
 		fclose($fh_content);
 		
@@ -230,7 +246,7 @@ final class cms
 		}
 
 		# open for writing
-		$fh_backup = fopen ($this->core->path . $this->bck_dir . $file . "." . time() . ".bck", "wb+");
+		$fh_backup = fopen ($this->core->path . $this->bck_dir . basename($file) . "." . time() . ".bck", "wb+");
 		
 		# store
 		fwrite($fh_backup , $content);

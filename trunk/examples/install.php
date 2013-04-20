@@ -75,7 +75,7 @@ $core->view->set ('module_info', $module_info);
 $core->view->use_page('header');
 
 # output for main
-$core->view->use_page('install');
+$core->view->use_page('tests/install');
 
 # output for footer
 $core->view->use_page('footer');
