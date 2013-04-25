@@ -1,1 +1,0 @@
-<!-- edit:false --><!-- I still can add comment but it will be formated --><h3>SoFramework</h3><p><!-- begin:header -->-header-<!-- end:header --></p><!-- begin:body -->-body-<!-- end:body -->
