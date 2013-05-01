@@ -112,6 +112,9 @@ final class session
 		}
 	}
 	
+	/*
+	* check if there is a database connection available
+	*/
 	private function check_basic_needs()
 	{
 		if ( !isset($this->core->db->db_ready) || $this->core->db->db_ready == false )
