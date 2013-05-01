@@ -18,8 +18,8 @@
 	</title>
 	
 	<!-- bootstrap http://twitter.github.io/bootstrap/ -->
-	<link href="<?php echo $this->core->path; ?>public/bootstrap/bootstrap.min.css" rel="stylesheet" />
-	<script src="<?php echo $this->core->path; ?>public/bootstrap/bootstrap.min.js"></script>
+	<link href="<?php echo $page_info->path; ?>public/bootstrap/bootstrap.min.css" rel="stylesheet" />
+	<script src="<?php echo $page_info->path; ?>public/bootstrap/bootstrap.min.js"></script>
 	
 	<!-- needed for dynamic change of scale for different type of screens -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">

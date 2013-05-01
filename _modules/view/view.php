@@ -19,6 +19,7 @@ final class view
 	
 	private
 		$page,
+		$view_access_core = false,
 		$local_path = 'public/' # default, change in main config!
 		;
 	
@@ -33,6 +34,9 @@ final class view
 		
 		# change location of view_location
 		$this->local_path = (isset($this->core->view_location)) ? $this->core->view_location : $this->local_path;
+	
+		# security can be bypassed
+		$this->view_access_core = (isset($this->core->view_access_core)) ? $this->core->view_access_core : $this->view_access_core;
 		
 		# set page info to template
 		$this->set( 'page_info', $this->core->page_info);
@@ -78,16 +82,25 @@ final class view
 			extract($this->variables);
 		}
 		
+		# save path
+		$path = $this->core->path . $this->local_path;
+			
+		# template have no access to $this->core
+		if (!$this->view_access_core)
+		{
+			$this->core = 0;
+		}
+		
 		# load all the pages and output them
 		foreach ( $this->file_list as $file )
 		{
-			if(file_exists($this->core->path . $this->local_path . $file . ".tpl"))
+			if(file_exists($path . $file . ".tpl"))
 			{
-				include($this->core->path . $this->local_path . $file . ".tpl");
+				include($path . $file . ".tpl");
 			}
-			elseif (file_exists($this->core->path . $this->local_path . $file . ".html"))
+			elseif (file_exists($path . $file . ".html"))
 			{
-				include($this->core->path . $this->local_path . $file . ".html");
+				include($path . $file . ".html");
 			}
 			else
 			{

@@ -6,6 +6,6 @@
 	<ul class="nav nav-list well">
 	  <li><a href="examples/install.php"><i class="icon-wrench"></i> Configuration</a></li>
 	  <li><a href="#"><i class="icon-book"></i> Examples</a></li>
-	  <li><a href="#"><i class="icon-flag"></i> Help</a></li>
+	  <li><a href="https://code.google.com/p/soframework/"><i class="icon-flag"></i> Help</a></li>
 	</ul>
 </div>

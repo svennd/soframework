@@ -133,8 +133,12 @@ final class core
 	*/
 	public function handle_page_info ($page_info_import)
 	{
+		# create a default object
 		$this->page_info 	= new stdClass();
-	
+		
+		# add a location path
+		$this->page_info->path = './';
+		
 		# save page info
 		if ( is_array($page_info_import) && !empty($page_info_import) )
 		{

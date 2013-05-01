@@ -29,4 +29,9 @@ $config = array (
 					
 					# log module : location for saving log files
 					// 'log_path' => '_main/',
+					
+					# view module ; template files can not access $this->core
+					# this can be put as true but it might be a danger as template files
+					# can be seen unparsed. Thought they aren't ment for reall coding!
+					// 'view_access_core' => false
 				);
