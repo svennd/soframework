@@ -107,7 +107,7 @@ final class mysql
 				# if query returns 0 lines but is valid
 				if ( mysql_num_rows( $result ) == 0 )
 				{
-					return $this->result = false;
+					return $this->result = array();
 				}
 				
 				# clean out, in case a value have been set before, 
