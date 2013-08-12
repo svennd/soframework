@@ -142,10 +142,15 @@ final class mysql
 				# clean up the request
 				mysql_free_result( $result );
 				
-				# in case its a 1 value only return as non-array
-				if ( in_array($method, array("NUM", "BOTH")) && preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
+				# in case its a 1 value, we can return as non-array
+				if ( preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
 				{
-					$this->result = ( isset($this->result['0']) ) ? $this->result['0'] : false;
+					# set pointer to start
+					reset($array);
+					# get first key
+					$key = key($array);
+					# pull result from first key value
+					$this->result = ( isset($this->result[$key]) ) ? $this->result[$key] : false;
 				}
 				
 				return $this->result;
