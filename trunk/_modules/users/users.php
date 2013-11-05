@@ -31,7 +31,8 @@ final class user
 	#	banned = -1, guest = 0, user = 1, moderator = 2, admin = 3, developer = 4
 	
 	public
-		$core
+		$core,
+		$keep_last_logged_in = true
 		;
 	
 	private 
@@ -62,6 +63,7 @@ final class user
 		
 		# if a core salt is set use that. (recommended)
 		$this->salt = (isset($this->core->user_salt)) ? $this->core->user_salt : $this->salt;
+		$this->keep_last_logged_in = (isset($this->core->keep_last_logged_in)) ? $this->core->keep_last_logged_in : $this->keep_last_logged_in;
 	}
 	
 	/**
@@ -94,12 +96,14 @@ final class user
 							`level`,
 							`pass_hash`,
 							`email`,
-							`reg_date`
+							`reg_date`,
+							`last_login_date`
 						) VALUES (
 							'" . $this->core->db->esc($user) . "', 
 							" . $level . ", 
 							'" . $pass_hash . "', 
 							'" . $this->core->db->esc($email) . "',
+							NOW(),
 							NOW()
 						);",
 						__FILE__, __LINE__);
@@ -149,6 +153,12 @@ final class user
 					'user_name' 		=> $r['username'],
 					'user_level'     	=> $r['level']
 					));
+				
+				// update last login
+				if ($this->core->keep_last_logged_in)
+				{
+					$this->core->db->sql("UPDATE `user_data` SET  `last_login_date` =  NOW() WHERE  `id` = '". (int) $r['id'] ."';", __FIlE__, __LINE__);
+				}
 				return true;
 			}
 			
