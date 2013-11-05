@@ -33,5 +33,9 @@ $config = array (
 					# view module ; template files can not access $this->core
 					# this can be put as true but it might be a danger as template files
 					# can be seen unparsed. Thought they aren't ment for reall coding!
-					// 'view_access_core' => false
+					// 'view_access_core' => false,
+					
+					# user module
+					# keep track when user last logged in; (extra query during login)
+					//'keep_last_logged_in' => true
 				);
