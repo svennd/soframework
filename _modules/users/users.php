@@ -110,8 +110,7 @@ final class user
 				{
 					if ( !$this->core->user->login ($user, $password) )
 					{
-						die('user plugin : new user could not login : ' . htmlspecialchars( $user ));
-						return false;
+						die('user plugin : new user could not login : ' . htmlspecialchars( $user ));	
 					}
 				}
 				return $insert_id;
