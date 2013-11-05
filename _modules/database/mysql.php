@@ -146,9 +146,9 @@ final class mysql
 				if ( preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
 				{
 					# set pointer to start
-					reset($array);
+					reset($this->result);
 					# get first key
-					$key = key($array);
+					$key = key($this->result);
 					# pull result from first key value
 					$this->result = ( isset($this->result[$key]) ) ? $this->result[$key] : false;
 				}
