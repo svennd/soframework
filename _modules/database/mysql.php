@@ -143,7 +143,7 @@ final class mysql
 				mysql_free_result( $result );
 				
 				# in case its a 1 value, we can return as non-array
-				if ( preg_match('/LIMIT\s?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
+				if ( preg_match('/LIMIT\s*?\r?\s*?(\s?0\s?,\s?1\s?|\s?1\s?);/i', $query) )
 				{
 					# set pointer to start
 					reset($this->result);
