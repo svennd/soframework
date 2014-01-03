@@ -47,7 +47,7 @@ final class R
 	*/
 	public function get_header($datafile)
 	{
-		if (!$this->check_file("/R_data/". $datafile)) { echo "datafile not found."; return false; }
+		if (!$this->check_file("/R_data/". $datafile)) { echo "datafile not found : /R_data/". htmlspecialchars($datafile); return false; }
 		$fh_datafile = fopen(getcwd() . '/R/R_data/'. $datafile, "r");
 		if ($fh_datafile)
 		{
@@ -65,8 +65,8 @@ final class R
 	public function run_script($scriptN, $datafile, $rows_A, $rows_B)
 	{
 		# check if script is there
-		if (!$this->check_file($scriptN)) { echo "script not found."; return false; }
-		if (!$this->check_file("R_data/". $datafile)) { echo "datafile not found."; return false; }
+		if (!$this->check_file($scriptN)) { echo "script not found : " . $scriptN; return false; }
+		if (!$this->check_file("R_data/". $datafile)) { echo "datafile not found : /R_data/" . $datafile; return false; }
 		
 		$script 	= getcwd(). '/R/' . $scriptN;
 		$count_A 	= count($rows_A);
@@ -76,6 +76,7 @@ final class R
 		$row_id_A = array();
 		$row_id_B = array();
 		$header = $this->get_header($datafile);
+
 		foreach ($rows_A as $rname)
 		{
 			$row_id_A[] = array_search($rname, $header);
@@ -92,12 +93,31 @@ final class R
 		# need to run?
 		if (!$this->check_file('R_cache/complete_'. $jobid))
 		{
-			exec ($exec_field);
+			# create info file with parameters
+			$info	= getcwd() . '/R/R_cache/info_' . $jobid;
+			$info_file = fopen($info, "wb");
+			fwrite($info_file, implode("\t", $rows_A) . "\n");
+			fwrite($info_file, implode("\t", $rows_B));
+			fclose($info_file);
+
 			# run
+			exec ($exec_field);
 			return array('status' => 2, 'jobid' => $jobid);
 		}
 		# already run
 		return array('status' => 1, 'jobid' => $jobid);
+	}
+	
+	/**
+	* Check job status
+	*/
+	public function job_status_complete($jobid)
+	{
+		if($this->check_file('R_cache/complete_'. $jobid))
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	/**
