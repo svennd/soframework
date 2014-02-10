@@ -15,6 +15,6 @@ $password 	= '';
 $database 	= '';
 
 // database type or method
-$db_type 	= 'mysql';	# mysql, mysqli
+$db_type 	= 'db_mysqli';	# db_mysql, db_mysqli
 
 ?>

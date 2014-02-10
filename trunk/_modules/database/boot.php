@@ -17,16 +17,20 @@ $settings = array(
 				);
 				
 $mode = (isset($mode)) ? $mode : '';
+
+# include the config
+include $core->path . '_modules/database/config.php';
+
 switch ($mode)
 {	
 	// start the module
 	case "construct" :
-						
+				
 				// include the class 
-				include $core->path . '_modules/database/mysql.php';
+				include $core->path . '_modules/database/' . $db_type . '.php';
 				
 				# boot class
-				$this->db = new mysql($this);
+				$this->db = new $db_type($this);
 		break;
 	
 	// end of database connection
