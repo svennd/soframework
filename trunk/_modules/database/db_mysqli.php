@@ -42,7 +42,7 @@ final class db_mysqli
 										))
 		{
 			// no connection
-			die('DB error : cannot connect, ' . mysqli_connect_errno() . mysqli_connect_error());
+			die('DB error : cannot connect, ' . mysqli_connect_errno($this->db_link) . mysqli_connect_error($this->db_link));
 		}	
 	}
 		
@@ -92,7 +92,7 @@ final class db_mysqli
 	public function sql ($query, $file = 'unkown', $lijn = 'unknown', $method = 'BOTH')
 	{		
 		# send the query
-		$result = mysqli_query($this->db_link, $query) or die('DB error : (' . $lijn . ', ' . $file . ') ' . mysqli_error() . ' could not execute query, ' . htmlspecialchars($query));
+		$result = mysqli_query($this->db_link, $query) or die('DB error : (' . $lijn . ', ' . $file . ') ' . mysqli_error($this->db_link) . ' could not execute query, ' . htmlspecialchars($query));
 		// print $query;
 		
 		# dit verwijderd meerdere spaties en vervangt door 1
