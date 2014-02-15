@@ -20,7 +20,7 @@ final class view
 	private
 		$page,
 		$view_access_core = false,
-		$local_path = 'public/' # default, change in main config!
+		$local_path = '_public/' # default, change in main config!
 		;
 	
 	/**
