@@ -1,11 +1,17 @@
-<div class="offset1 span11">
-	<h3>SoFramework</h3>
-	<p>Hello, Welcome to <a href="https://code.google.com/p/soframework/">soFramework</a> version Alpha 3.</p>
+<?php if(isset($report)) : ?>
+<div class="alert alert-warning alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong><span class="glyphicon glyphicon-remove">&nbsp;Warnings!</strong> <?php echo $report; ?>
+</div>
+<?php endif; ?>
 
-	<!-- guide the 'new' user to some options -->
-	<ul class="nav nav-list well">
-	  <li><a href="examples/install.php"><i class="icon-wrench"></i> Configuration</a></li>
-	  <li><a href="#"><i class="icon-book"></i> Examples</a></li>
-	  <li><a href="https://code.google.com/p/soframework/"><i class="icon-flag"></i> Help</a></li>
-	</ul>
+<?php if(isset($succes)) : ?>
+<div class="alert alert-success alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong><span class="glyphicon glyphicon-ok"></span>&nbsp;Succes!</strong> <?php echo $succes; ?>
+</div>
+<?php endif; ?>
+
+<div class="well col-xs-12 col-sm-12 col-md-12 col-lg-12">
+Index
 </div>

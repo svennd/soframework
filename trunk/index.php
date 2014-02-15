@@ -4,18 +4,18 @@ include('_main/main_frame.php');
  
 # initialise frame
 $core = new core(
-					array('title' => 'Mijn Pagina')
+					array('title' => 'Index')
 				);
 
 # load modules
-$core->load_modules(array('view'));
-
-# yet to give examples :
-# 'database', 'log', 'sessions', 'users'
-
-# already done :
-# 'cms'
+$core->load_modules(array('database', 'sessions', 'users', 'view'));
  
+# is logged in
+$core->view->is_logged_in 	= $core->user->is_logged();
+
+# is admin
+$core->view->is_admin 		= $core->user->is_level(3);
+
 # output for the header
 $core->view->use_page('header');
 
