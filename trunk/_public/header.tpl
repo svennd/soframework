@@ -39,7 +39,7 @@
 						</li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						<?php if ($is_logged_in): ?>
+						<?php if (isset($is_logged_in) && $is_logged_in): ?>
 						<li>
 							<a href="ucp.php?byebye"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
 						</li>
