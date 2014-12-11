@@ -35,7 +35,7 @@ final class user
 		$keep_last_logged_in = true
 		;
 	
-	private 
+	private
 		$salt = 'xTf.32G'
 		;
 	
@@ -85,12 +85,12 @@ final class user
 	{
 		# check user already exist
 		$this->core->db->sql('SELECT username FROM `user_data` WHERE `username` = "' . $this->core->db->esc($user) . '" LIMIT 1;', __FILE__, __LINE__ );
-		
-		if ( count($this->core->db->result) == 0 )
+
+		if ( count($this->core->db->result) == 0 || !$this->core->db->result)
 		{
 			$pass_hash = $this->make_pass_hash($user, $password);
 			
-			$this->core->db->sql("INSERT INTO 
+			$this->core->db->sql("INSERT INTO
 				`user_data` (
 							`username`,
 							`level`,
@@ -99,9 +99,9 @@ final class user
 							`reg_date`,
 							`last_login_date`
 						) VALUES (
-							'" . $this->core->db->esc($user) . "', 
-							" . $level . ", 
-							'" . $pass_hash . "', 
+							'" . $this->core->db->esc($user) . "',
+							" . $level . ",
+							'" . $pass_hash . "',
 							'" . $this->core->db->esc($email) . "',
 							NOW(),
 							NOW()
@@ -114,16 +114,14 @@ final class user
 				{
 					if ( !$this->core->user->login ($user, $password) )
 					{
-						die('user plugin : new user could not login : ' . htmlspecialchars( $user ));	
+						die('user plugin : new user could not login : ' . htmlspecialchars( $user ));
 					}
 				}
 				return $insert_id;
 			}
 		}
-		else
-		{
-			return false;
-		}
+		
+		# failed
 		return false;
 	}
 	
@@ -138,7 +136,7 @@ final class user
 		# default geeft sowieso bool terug
 		# als hij gast is
 		if ( $this->core->session->get('user_level') !== FALSE )
-		{			
+		{
 			# paswoord maken
 			$pass_hash = $this->make_pass_hash($user, $password);
 			$this->core->db->sql('SELECT id, username, level FROM `user_data` WHERE `username` = "' . $user . '" AND `pass_hash` = "' . $pass_hash . '" LIMIT 1;', __FILE__, __LINE__);
@@ -155,16 +153,14 @@ final class user
 					));
 				
 				// update last login
-				if ($this->core->keep_last_logged_in)
+				if ($this->keep_last_logged_in)
 				{
-					$this->core->db->sql("UPDATE `user_data` SET  `last_login_date` =  NOW() WHERE  `id` = '". (int) $r['id'] ."';", __FIlE__, __LINE__);
+					$this->core->db->sql("UPDATE `user_data` SET  `last_login_date` =  NOW() WHERE  `id` = '". (int) $r['id'] ."';", __FILE__, __LINE__);
 				}
 				return true;
 			}
-			
-			# user not found
-			return false;
 		}
+		# user not found or
 		# user was logged in
 		return false;
 	}
@@ -175,7 +171,7 @@ final class user
 	* @param string $password
 	*/
 	public function logout ()
-	{	
+	{
 		# alle inhoud verwijderen
 		$this->core->session->reset();
 	}
@@ -222,7 +218,7 @@ final class user
 	/**
 	* get user name
 	* @return string
-	*/	
+	*/
 	public function get_user_name()
 	{
 		return $this->core->session->get('user_name');
@@ -231,7 +227,7 @@ final class user
 	/**
 	* get user level
 	* @return int
-	*/	
+	*/
 	public function get_user_level()
 	{
 		return (int) $this->core->session->get('user_level');
